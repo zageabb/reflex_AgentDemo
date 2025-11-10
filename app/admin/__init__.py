@@ -5,10 +5,7 @@ from flask import Blueprint
 bp = Blueprint("admin", __name__, url_prefix="/admin")
 
 
-@bp.route("/")
-def dashboard() -> str:
-    """Minimal placeholder for the admin dashboard."""
-    return "Admin dashboard"
+from . import routes  # noqa: E402,F401  # Ensure routes are registered
 
 
 __all__ = ["bp"]

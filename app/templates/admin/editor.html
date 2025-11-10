@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Scenario {{ scenario_id }} · Reflex Demo{% endblock %}
+
+{% block content %}
+  <div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
+      <div>
+        <h1 class="h3 mb-1">Editing {{ scenario_name }}</h1>
+        <p class="text-muted mb-0">Use the editor below to update the scenario JSON.</p>
+      </div>
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" href="{{ url_for('admin.scenarios') }}">Back to Scenarios</a>
+      </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" novalidate id="scenario-editor-form">
+      {{ form.hidden_tag() }}
+      <div class="mb-3">
+        <label class="form-label" for="scenario-editor">Scenario JSON</label>
+        <div id="scenario-editor" class="border rounded" style="min-height: 480px">{{ form.content.data | e }}</div>
+        {{ form.content(class="d-none", id="scenario-editor-input") }}
+        {% for error in form.content.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+        <div class="form-text">Changes are validated for basic structure before saving.</div>
+      </div>
+      <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+        <div class="btn-group" role="group" aria-label="Editor helpers">
+          <button class="btn btn-outline-secondary" type="button" id="format-json">Format JSON</button>
+          <button class="btn btn-outline-secondary" type="button" id="validate-json">Validate JSON</button>
+        </div>
+        {{ form.submit(class="btn btn-primary") }}
+      </div>
+      <div class="mt-3" id="editor-feedback" role="status" aria-live="polite"></div>
+    </form>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ace.js" integrity="sha512-TMumqEd2fBF41oA3zQRe65fx2Yol91ux6qdcNccIelG0+D7u3OO8CHW80vA56Zk8Hn1O5cH+3cMyRgDrWCOTaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    (function () {
+      const textarea = document.getElementById("scenario-editor-input");
+      const form = document.getElementById("scenario-editor-form");
+      const feedback = document.getElementById("editor-feedback");
+      const editorElement = document.getElementById("scenario-editor");
+
+      if (!textarea || !form || !editorElement) {
+        return;
+      }
+
+      const editor = ace.edit(editorElement, {
+        mode: "ace/mode/json",
+        theme: "ace/theme/textmate",
+        wrap: true,
+        useWorker: true,
+        minLines: 20,
+        maxLines: Infinity,
+      });
+      editor.session.setValue(textarea.value);
+
+      function setFeedback(message, level) {
+        if (!feedback) {
+          return;
+        }
+        feedback.textContent = message;
+        feedback.className = level ? `alert alert-${level}` : "";
+      }
+
+      document.getElementById("format-json")?.addEventListener("click", () => {
+        try {
+          const parsed = JSON.parse(editor.getValue());
+          editor.session.setValue(JSON.stringify(parsed, null, 2));
+          setFeedback("JSON formatted successfully.", "success");
+        } catch (error) {
+          setFeedback(`Unable to format JSON: ${error.message}`, "danger");
+        }
+      });
+
+      document.getElementById("validate-json")?.addEventListener("click", () => {
+        try {
+          JSON.parse(editor.getValue());
+          setFeedback("JSON is syntactically valid.", "success");
+        } catch (error) {
+          setFeedback(`Invalid JSON: ${error.message}`, "danger");
+        }
+      });
+
+      form.addEventListener("submit", () => {
+        textarea.value = editor.getValue();
+      });
+    })();
+  </script>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Scenarios · Reflex Demo{% endblock %}
+
+{% block content %}
+  <div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+      <div>
+        <h1 class="h3 mb-1">Scenario Library</h1>
+        <p class="text-muted mb-0">Manage available scenario JSON files.</p>
+      </div>
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary" href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+        <a class="btn btn-primary" href="{{ url_for('admin.new_scenario') }}">Create New Scenario</a>
+      </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Existing scenarios</h2>
+        {% if scenarios %}
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th scope="col">File</th>
+                  <th scope="col" class="text-end">Size</th>
+                  <th scope="col">Last Modified</th>
+                  <th scope="col" class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for scenario in scenarios %}
+                  <tr>
+                    <td class="fw-medium">{{ scenario.name }}</td>
+                    <td class="text-end">{{ (scenario.size / 1024) | round(2) }} KB</td>
+                    <td>{{ scenario.modified.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td class="text-end">
+                      <div class="d-flex justify-content-end align-items-center gap-2 flex-wrap">
+                        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.edit_scenario', scenario_id=scenario.name.rsplit('.', 1)[0]) }}">Edit</a>
+                        <form class="d-flex align-items-center gap-2" method="post" action="{{ url_for('admin.duplicate_scenario') }}">
+                          {{ duplicate_form.csrf_token }}
+                          {{ duplicate_form.source_filename(value=scenario.name) }}
+                          {{ duplicate_form.new_filename(
+                            class="form-control form-control-sm",
+                            value=(scenario.name[:-5] ~ '-copy') if scenario.name.endswith('.json') else (scenario.name ~ '-copy')
+                          ) }}
+                          <button class="btn btn-sm btn-outline-secondary" type="submit">Duplicate</button>
+                        </form>
+                        <form method="post" action="{{ url_for('admin.delete_scenario') }}" onsubmit="return confirm('Delete {{ scenario.name }}?');">
+                          {{ delete_form.csrf_token }}
+                          {{ delete_form.filename(value=scenario.name) }}
+                          <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">No scenario files found. Create one to get started.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
