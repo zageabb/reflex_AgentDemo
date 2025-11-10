@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-  <section class="d-flex flex-column h-100" id="agents-factory">
+  <section class="d-flex flex-column h-100" id="agents-factory" data-accent="indigo">
     <div class="card border-0 shadow-sm flex-grow-1">
       <div class="card-header bg-body d-flex flex-wrap justify-content-between align-items-center gap-3">
         <div>
@@ -26,21 +26,21 @@
       <div class="card-body p-0 d-flex flex-column">
         <div class="px-4 pt-4 pb-3 border-bottom">
           <div class="d-flex flex-wrap gap-3 align-items-center text-muted small" id="active-scenario-meta">
-            <span class="d-inline-flex align-items-center gap-2">
-              <i class="fa-solid fa-folder-tree text-primary"></i>
+            <span class="d-inline-flex align-items-center gap-2" data-role="accent-pill">
+              <i class="fa-solid fa-folder-tree"></i>
               <span id="active-scenario-category">No category</span>
             </span>
-            <span class="d-inline-flex align-items-center gap-2">
-              <i class="fa-solid fa-file-code text-primary"></i>
+            <span class="d-inline-flex align-items-center gap-2" data-role="accent-pill">
+              <i class="fa-solid fa-file-code"></i>
               <span id="active-scenario-filename">—</span>
             </span>
-            <span class="d-inline-flex align-items-center gap-2">
-              <i class="fa-solid fa-tags text-primary"></i>
+            <span class="d-inline-flex align-items-center gap-2" data-role="accent-pill">
+              <i class="fa-solid fa-tags"></i>
               <span id="active-scenario-tags">Add tags to improve discovery</span>
             </span>
           </div>
         </div>
-        <div class="chat-transcript flex-grow-1 px-4 py-4" id="chat-transcript" aria-live="polite">
+        <div class="chat-transcript flex-grow-1 px-4 py-4" id="chat-transcript" aria-live="polite" data-empty="true">
           {% set conversation = conversation | default([]) %}
           {% if conversation %}
             {% for message in conversation %}
@@ -107,192 +107,14 @@
 {% block scripts_extra %}
   {{ super() }}
   <script>
-    const SCENARIO_DATA = {{ scenarios | tojson }};
-    const SELECTED_SCENARIO = {{ selected_scenario_id | tojson }};
-
-    (function () {
-      const searchInput = document.getElementById("scenario-search");
-      const categoryTabs = document.querySelectorAll("[data-category-tab]");
-      const scenarioCards = Array.from(document.querySelectorAll("[data-scenario-card]"));
-      const scenarioGroups = document.getElementById("scenario-groups");
-      const emptyState = document.getElementById("scenario-no-results");
-      const activeTitle = document.getElementById("active-scenario-title");
-      const activeCategory = document.getElementById("active-scenario-category");
-      const activeFilename = document.getElementById("active-scenario-filename");
-      const activeTags = document.getElementById("active-scenario-tags");
-      const chatFeedback = document.getElementById("chat-feedback");
-      const copyButtons = document.querySelectorAll('[data-action="copy-transcript"]');
-      const restartButtons = document.querySelectorAll('[data-action="restart-scenario"]');
-      const chatTranscript = document.getElementById("chat-transcript");
-
-      if (!scenarioGroups) {
-        return;
-      }
-
-      const scenarioLookup = new Map(
-        SCENARIO_DATA.map((item) => [String(item.id), item])
-      );
-
-      let activeCategoryFilter = "__all__";
-
-      function setFeedback(message) {
-        if (!chatFeedback) {
-          return;
-        }
-        chatFeedback.textContent = "";
-        if (message) {
-          void chatFeedback.offsetHeight;
-          chatFeedback.textContent = message;
-        }
-      }
-
-      function applyFilters() {
-        const term = (searchInput?.value || "").trim().toLowerCase();
-        let visibleCount = 0;
-
-        scenarioGroups
-          .querySelectorAll("[data-category-panel]")
-          .forEach((section) => {
-            let sectionVisible = 0;
-            section.querySelectorAll("[data-scenario-card]").forEach((card) => {
-              const cardCategory = card.dataset.scenarioCategory;
-              const searchText = card.dataset.searchText || "";
-              const matchesCategory =
-                activeCategoryFilter === "__all__" || cardCategory === activeCategoryFilter;
-              const matchesSearch = !term || searchText.includes(term);
-
-              if (matchesCategory && matchesSearch) {
-                card.classList.remove("d-none");
-                visibleCount += 1;
-                sectionVisible += 1;
-              } else {
-                card.classList.add("d-none");
-              }
-            });
-
-            section.classList.toggle("d-none", sectionVisible === 0);
-          });
-
-        if (emptyState) {
-          emptyState.classList.toggle("d-none", visibleCount > 0);
-        }
-      }
-
-      function setActiveScenario(id) {
-        const activeId = String(id || "");
-        scenarioCards.forEach((card) => {
-          const isActive = card.dataset.scenarioId === activeId;
-          card.classList.toggle("active", isActive);
-          card.setAttribute("aria-current", isActive ? "true" : "false");
-        });
-
-        const data = scenarioLookup.get(activeId);
-        if (!data) {
-          if (activeTitle) {
-            activeTitle.textContent = "Select a scenario to begin";
-          }
-          if (activeCategory) {
-            activeCategory.textContent = "No category";
-          }
-          if (activeFilename) {
-            activeFilename.textContent = "—";
-          }
-          if (activeTags) {
-            activeTags.textContent = "Add tags to improve discovery";
-          }
-          return;
-        }
-
-        if (activeTitle) {
-          activeTitle.textContent = data.title || data.id;
-        }
-        if (activeCategory) {
-          activeCategory.textContent = data.category || "Uncategorized";
-        }
-        if (activeFilename) {
-          activeFilename.textContent = data.filename || `${data.id}.json`;
-        }
-        if (activeTags) {
-          if (Array.isArray(data.tags) && data.tags.length > 0) {
-            activeTags.textContent = data.tags.join(", ");
-          } else {
-            activeTags.textContent = "No tags provided";
-          }
-        }
-
-        document.dispatchEvent(
-          new CustomEvent("scenario:selected", {
-            detail: { scenario: data },
-          })
-        );
-      }
-
-      categoryTabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-          categoryTabs.forEach((item) => item.classList.remove("active"));
-          tab.classList.add("active");
-          activeCategoryFilter = tab.dataset.categoryTab || "__all__";
-          applyFilters();
-        });
-      });
-
-      if (searchInput) {
-        searchInput.addEventListener("input", () => {
-          applyFilters();
-        });
-      }
-
-      scenarioCards.forEach((card) => {
-        card.addEventListener("click", (event) => {
-          const scenarioId = card.dataset.scenarioId;
-          if (!scenarioId) {
-            return;
-          }
-          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
-            return;
-          }
-          event.preventDefault();
-          setActiveScenario(scenarioId);
-          const url = new URL(window.location.href);
-          url.searchParams.set("scenario", scenarioId);
-          window.history.replaceState({}, "", url);
-        });
-      });
-
-      copyButtons.forEach((button) => {
-        button.addEventListener("click", async () => {
-          if (!chatTranscript) {
-            return;
-          }
-          const text = chatTranscript.innerText.trim();
-          if (!text) {
-            setFeedback("There is no transcript to copy yet.");
-            return;
-          }
-          try {
-            await navigator.clipboard.writeText(text);
-            setFeedback("Transcript copied to your clipboard.");
-          } catch (error) {
-            console.error("Clipboard copy failed", error);
-            setFeedback("Unable to copy transcript. Try using Ctrl+C instead.");
-          }
-        });
-      });
-
-      restartButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          document.dispatchEvent(new CustomEvent("scenario:restart"));
-          setFeedback("Scenario reset. Ready to play again.");
-        });
-      });
-
-      if (SELECTED_SCENARIO) {
-        setActiveScenario(SELECTED_SCENARIO);
-      } else if (scenarioCards.length) {
-        setActiveScenario(scenarioCards[0].dataset.scenarioId);
-      }
-
-      applyFilters();
-    })();
+    window.AGENT_CONFIG = {
+      scenarios: {{ scenarios | tojson }},
+      selectedScenarioId: {{ selected_scenario_id | tojson }},
+      endpoints: {
+        scenarioDetail: "{{ url_for('main.scenario_details', scenario_id='__SCENARIO_ID__') }}",
+        snippet: "{{ url_for('main.serve_snippet', snippet_path='__SNIPPET__') }}",
+      },
+    };
   </script>
+  <script src="{{ url_for('static', filename='js/chat.js') }}" defer></script>
 {% endblock %}
