@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-from flask import Blueprint, jsonify
+from flask import Blueprint
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
-
-@bp.route("/status")
-def status() -> tuple[dict[str, str], int]:
-    """Simple endpoint to verify the auth blueprint is registered."""
-    return jsonify({"status": "auth-ready"}), 200
+# Import routes to register blueprint handlers.
+from . import routes  # noqa: E402,F401
 
 
 __all__ = ["bp"]
