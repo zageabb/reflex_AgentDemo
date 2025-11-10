@@ -1,0 +1,68 @@
+<nav class="navbar navbar-expand-lg navbar-light border-bottom bg-body shadow-sm">
+  <div class="container-xxl">
+    <a class="navbar-brand fw-semibold" href="{{ url_for('main.index') }}">
+      <i class="fa-solid fa-robot me-2 text-primary"></i>Reflex Agents
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#primary-navbar"
+      aria-controls="primary-navbar"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="primary-navbar">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-lg-1">
+        <li class="nav-item">
+          <a
+            class="nav-link {% if request.endpoint == 'main.index' and not request.args.get('scenario') %}active{% endif %}"
+            href="{{ url_for('main.index') }}"
+          >
+            Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('main.index') ~ '#agents-factory' }}">Agents Factory</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('main.index') ~ '#help-center' }}">Help</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('auth.login') }}">My Account</a>
+        </li>
+        {% if current_user.is_authenticated and current_user.is_admin %}
+          <li class="nav-item">
+            <a
+              class="nav-link {% if request.blueprint == 'admin' %}active{% endif %}"
+              href="{{ url_for('admin.dashboard') }}"
+            >
+              <i class="fa-solid fa-gauge-high me-1"></i>Admin
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+
+      <div class="d-flex align-items-center gap-3">
+        {% if current_user.is_authenticated %}
+          <div class="d-flex align-items-center gap-2 text-muted small">
+            <span class="avatar rounded-circle bg-primary-subtle text-primary-emphasis d-inline-flex align-items-center justify-content-center" style="width: 2rem; height: 2rem;">
+              <i class="fa-solid fa-user-astronaut"></i>
+            </span>
+            <span class="fw-medium">{{ current_user.username or current_user.email }}</span>
+          </div>
+          <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('auth.logout') }}">
+            <i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Sign out
+          </a>
+        {% else %}
+          <a class="btn btn-primary" href="{{ url_for('auth.login') }}">
+            <i class="fa-solid fa-right-to-bracket me-2"></i>Sign in
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>

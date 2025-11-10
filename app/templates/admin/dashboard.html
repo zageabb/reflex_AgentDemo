@@ -1,53 +1,131 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Dashboard · Reflex Demo{% endblock %}
+{% block title %}Admin Dashboard · Reflex Agents Factory{% endblock %}
 
-{% block content %}
-  <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <div>
-        <h1 class="h3 mb-1">Admin Dashboard</h1>
-        <p class="text-muted mb-0">Overview of key application metrics.</p>
-      </div>
-      <div class="btn-group" role="group" aria-label="Admin navigation">
-        <a class="btn btn-outline-primary" href="{{ url_for('admin.scenarios') }}">Scenarios</a>
-        <a class="btn btn-outline-secondary" href="{{ url_for('admin.uploads') }}">Uploads</a>
+{% block sidebar %}
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <h2 class="h5 mb-3">Operational checklist</h2>
+      <p class="text-muted small mb-3">
+        Keep the demo library fresh by reviewing scenario quality and data hygiene on a regular cadence.
+      </p>
+      <ol class="text-muted small ps-3 mb-4">
+        <li class="mb-2">Confirm each scenario contains metadata with title, category, and meaningful tags.</li>
+        <li class="mb-2">Replay the scripted chat to ensure attachments and snippet references still render.</li>
+        <li class="mb-2">Archive unused scenarios after major launches to keep the catalog concise.</li>
+        <li>Rotate uploaded snippets quarterly to prevent stale copy or broken links.</li>
+      </ol>
+      <div class="d-grid gap-2">
+        <a class="btn btn-outline-primary btn-sm" href="{{ url_for('admin.scenarios') }}">
+          <i class="fa-solid fa-list-check me-1"></i>Manage scenarios
+        </a>
+        <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('admin.uploads') }}">
+          <i class="fa-solid fa-cloud-arrow-up me-1"></i>Review uploads
+        </a>
       </div>
     </div>
+  </div>
+{% endblock %}
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
+{% block content %}
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+      <p class="text-uppercase text-muted small fw-semibold mb-1">Administration</p>
+      <h1 class="h3 mb-1">Dashboard overview</h1>
+      <p class="text-muted mb-0">
+        Track overall health of the demo workspace and jump directly into common maintenance tasks.
+      </p>
+    </div>
+    <div class="btn-group" role="group" aria-label="Admin navigation">
+      <a class="btn btn-outline-primary" href="{{ url_for('admin.scenarios') }}">Scenarios</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('admin.uploads') }}">Uploads</a>
+    </div>
+  </div>
 
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body">
-            <h2 class="card-title h6 text-uppercase text-muted">Users</h2>
-            <p class="display-5 fw-semibold mb-0">{{ user_count }}</p>
-          </div>
+  <div class="row g-4 mb-4">
+    <div class="col-sm-6 col-lg-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <p class="text-uppercase text-muted small fw-semibold mb-1">Registered users</p>
+          <p class="display-5 fw-semibold mb-2">{{ user_count }}</p>
+          <p class="text-muted small mb-0">Invite colleagues so they can create and curate new scenarios.</p>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body">
-            <h2 class="card-title h6 text-uppercase text-muted">Scenarios</h2>
-            <p class="display-5 fw-semibold mb-0">{{ scenario_count }}</p>
-          </div>
+    </div>
+    <div class="col-sm-6 col-lg-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <p class="text-uppercase text-muted small fw-semibold mb-1">Scenario files</p>
+          <p class="display-5 fw-semibold mb-2">{{ scenario_count }}</p>
+          <p class="text-muted small mb-0">Each scenario should have descriptive metadata and a clear storyline.</p>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body">
-            <h2 class="card-title h6 text-uppercase text-muted">Uploads</h2>
-            <p class="display-5 fw-semibold mb-0">{{ upload_count }}</p>
+    </div>
+    <div class="col-sm-6 col-lg-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <p class="text-uppercase text-muted small fw-semibold mb-1">Uploaded snippets</p>
+          <p class="display-5 fw-semibold mb-2">{{ upload_count }}</p>
+          <p class="text-muted small mb-0">Keep reusable HTML snippets tidy and remove outdated assets.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <h2 class="h5 mb-3">What to do next</h2>
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="d-flex gap-3">
+            <div class="text-primary fs-3">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <div>
+              <h3 class="h6 mb-1">Curate the library</h3>
+              <p class="text-muted small mb-0">
+                Review scenario descriptions and tags to ensure they communicate the intended story. Use the duplicate action to branch experiments without touching production flows.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="d-flex gap-3">
+            <div class="text-primary fs-3">
+              <i class="fa-solid fa-shield-check"></i>
+            </div>
+            <div>
+              <h3 class="h6 mb-1">Audit access</h3>
+              <p class="text-muted small mb-0">
+                Confirm only trusted teammates have admin rights. Rotate demo credentials as team members change to keep the environment secure.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="d-flex gap-3">
+            <div class="text-primary fs-3">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div>
+              <h3 class="h6 mb-1">Plan the next release</h3>
+              <p class="text-muted small mb-0">
+                Align upcoming product announcements with scenario updates so sales teams always have a fresh story to demonstrate.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="d-flex gap-3">
+            <div class="text-primary fs-3">
+              <i class="fa-solid fa-database"></i>
+            </div>
+            <div>
+              <h3 class="h6 mb-1">Back up content</h3>
+              <p class="text-muted small mb-0">
+                Export scenarios and snippets regularly so you can restore the demo quickly if files are removed by mistake.
+              </p>
+            </div>
           </div>
         </div>
       </div>

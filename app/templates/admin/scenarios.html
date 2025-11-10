@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Manage Scenarios · Reflex Demo{% endblock %}
+{% block title %}Manage Scenarios · Reflex Agents Factory{% endblock %}
 
 {% block content %}
   <div class="container py-4">
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
       <div>
+        <p class="text-uppercase text-muted small fw-semibold mb-1">Library management</p>
         <h1 class="h3 mb-1">Scenario Library</h1>
         <p class="text-muted mb-0">Manage available scenario JSON files.</p>
       </div>
@@ -15,18 +16,7 @@
       </div>
     </div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    <div class="card shadow-sm">
+    <div class="card shadow-sm border-0">
       <div class="card-body">
         <h2 class="h5 mb-3">Existing scenarios</h2>
         {% if scenarios %}

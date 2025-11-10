@@ -1,0 +1,86 @@
+{% set message_obj = message if message is defined else {} %}
+{% if message_obj.role is defined %}
+  {% set role = message_obj.role %}
+{% elif message_obj['role'] is defined %}
+  {% set role = message_obj['role'] %}
+{% elif message_obj.get is defined %}
+  {% set role = message_obj.get('role', 'assistant') %}
+{% else %}
+  {% set role = 'assistant' %}
+{% endif %}
+{% if message_obj.speaker is defined %}
+  {% set speaker = message_obj.speaker %}
+{% elif message_obj['speaker'] is defined %}
+  {% set speaker = message_obj['speaker'] %}
+{% elif message_obj.get is defined %}
+  {% set speaker = message_obj.get('speaker') %}
+{% else %}
+  {% set speaker = None %}
+{% endif %}
+{% if message_obj.content_html is defined %}
+  {% set content_html = message_obj.content_html %}
+{% elif message_obj['content_html'] is defined %}
+  {% set content_html = message_obj['content_html'] %}
+{% elif message_obj.get is defined %}
+  {% set content_html = message_obj.get('content_html') %}
+{% else %}
+  {% set content_html = None %}
+{% endif %}
+{% if message_obj.content is defined %}
+  {% set content_text = message_obj.content %}
+{% elif message_obj['content'] is defined %}
+  {% set content_text = message_obj['content'] %}
+{% elif message_obj.get is defined %}
+  {% set content_text = message_obj.get('content', '') %}
+{% else %}
+  {% set content_text = '' %}
+{% endif %}
+{% if message_obj.timestamp is defined %}
+  {% set timestamp = message_obj.timestamp %}
+{% elif message_obj['timestamp'] is defined %}
+  {% set timestamp = message_obj['timestamp'] %}
+{% elif message_obj.get is defined %}
+  {% set timestamp = message_obj.get('timestamp') %}
+{% else %}
+  {% set timestamp = None %}
+{% endif %}
+{% set is_user = role in ['user', 'human', 'player'] %}
+{% set icon = 'fa-user' if is_user else 'fa-robot' %}
+{% set bubble_classes = 'bg-primary text-white' if is_user else 'bg-body text-body' %}
+<div
+  class="chat-message d-flex gap-3 {% if is_user %}justify-content-end{% endif %}"
+  data-message-role="{{ role }}"
+>
+  {% if not is_user %}
+    <div class="flex-shrink-0 text-primary fs-4" aria-hidden="true">
+      <i class="fa-solid {{ icon }}"></i>
+    </div>
+  {% endif %}
+  <div class="chat-bubble {{ bubble_classes }} shadow-sm">
+    <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+      <div class="d-flex flex-column">
+        <span class="fw-semibold small text-uppercase text-muted">
+          {{ speaker or (is_user and 'You' or 'Agent') }}
+        </span>
+        {% if timestamp %}
+          <span class="text-muted small">{{ timestamp }}</span>
+        {% endif %}
+      </div>
+      {% if is_user %}
+        <div class="text-primary fs-5" aria-hidden="true">
+          <i class="fa-solid {{ icon }}"></i>
+        </div>
+      {% endif %}
+    </div>
+    <div class="chat-bubble-content">
+      {% if content_html %}
+        {{ content_html | safe }}
+      {% else %}
+        {{ content_text | default('') | replace('\n', '<br />') | safe }}
+      {% endif %}
+    </div>
+  </div>
+  {% if not is_user %}
+    <div class="flex-grow-1"></div>
+  {% endif %}
+</div>
