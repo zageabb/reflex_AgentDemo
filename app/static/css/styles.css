@@ -86,7 +86,8 @@ body {
 }
 
 .chat-transcript {
-  max-height: clamp(24rem, 60vh, 42rem);
+  min-height: clamp(24rem, 50vh, 36rem);
+  max-height: clamp(32rem, 75vh, 52rem);
   overflow-y: auto;
   background: var(--bs-body-bg);
   scroll-behavior: smooth;
