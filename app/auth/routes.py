@@ -13,13 +13,13 @@ from urllib.parse import urlsplit
 from wtforms import EmailField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, Length
 
-from passlib.hash import bcrypt
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from ..models import User
 from . import bp
 
 
-_DUMMY_PASSWORD_HASH = bcrypt.hash("dummy-password")
+_DUMMY_PASSWORD_HASH = generate_password_hash("dummy-password")
 
 
 class LoginForm(FlaskForm):
@@ -41,10 +41,9 @@ class LoginForm(FlaskForm):
 def _verify_password(stored_hash: str, candidate: str) -> bool:
     """Verify a plaintext password against a stored hash safely."""
 
-    try:
-        return bcrypt.verify(candidate, stored_hash)
-    except ValueError:
+    if not stored_hash:
         return False
+    return check_password_hash(stored_hash, candidate)
 
 
 @bp.route("/status")

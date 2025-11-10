@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from passlib.hash import bcrypt
 from flask_login import UserMixin
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from . import db, login_manager
 
@@ -36,14 +36,14 @@ class User(UserMixin, db.Model):
     def set_password(self, password: str) -> None:
         """Hash and store the user's password."""
 
-        self.password_hash = bcrypt.hash(password)
+        self.password_hash = generate_password_hash(password)
 
     def check_password(self, password: str) -> bool:
         """Verify a plaintext password against the stored hash."""
 
         if not self.password_hash:
             return False
-        return bcrypt.verify(password, self.password_hash)
+        return check_password_hash(self.password_hash, password)
 
     def __repr__(self) -> str:  # pragma: no cover - repr for debugging
         return f"<User {self.username!r}>"

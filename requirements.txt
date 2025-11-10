@@ -5,4 +5,3 @@ SQLAlchemy
 email-validator
 python-dotenv
 gunicorn
-passlib[bcrypt]
