@@ -1,23 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Sign In · Reflex Demo{% endblock %}
+{% block title %}Sign In · Reflex Agents Factory{% endblock %}
 
 {% block content %}
   <div class="container py-5">
     <div class="row justify-content-center">
       <div class="col-md-6 col-lg-5">
         <h1 class="h3 mb-4 text-center">Sign in to continue</h1>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
 
         <form method="post" novalidate>
           {{ form.hidden_tag() }}

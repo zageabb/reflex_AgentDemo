@@ -1,69 +1,110 @@
 {% extends "base.html" %}
 
-{% block title %}Scenario Library · Reflex Demo{% endblock %}
+{% block title %}Scenario Library · Reflex Agents Factory{% endblock %}
 
-{% block content %}
-<div class="container pb-5">
-  <div class="row mb-4">
-    <div class="col-lg-8">
-      <h1 class="mb-2">Scenario Library</h1>
-      <p class="text-muted mb-0">
-        Browse the available demo scenarios or use the search bar to quickly find a
-        specific one. Selecting a scenario will start playback automatically on the
-        client.
-      </p>
-    </div>
-  </div>
-
-  <div class="row mb-4">
-    <div class="col-md-6 col-lg-4">
-      <label class="form-label" for="scenario-search">Search scenarios</label>
-      <input
-        class="form-control"
-        id="scenario-search"
-        name="search"
-        placeholder="Search by title, description, or tag"
-        type="search"
-        value="{{ search_term }}"
-      />
-    </div>
-  </div>
-
-  <div id="scenario-groups">
-    {% if scenario_groups %}
-      {% for category, items in scenario_groups.items() %}
-        <section class="mb-5" data-category="{{ category }}">
-          <h2 class="h4 mb-3">{{ category }}</h2>
-          <div class="list-group">
-            {% for scenario in items %}
-              <a
-                class="list-group-item list-group-item-action"
-                data-scenario-id="{{ scenario.id }}"
-                href="{{ url_for('main.index') }}?scenario={{ scenario.id }}"
-              >
-                <div class="d-flex justify-content-between align-items-start">
-                  <h3 class="h5 mb-1">{{ scenario.title }}</h3>
-                </div>
-                {% if scenario.description %}
-                  <p class="mb-1 text-muted">{{ scenario.description }}</p>
-                {% endif %}
-                {% if scenario.tags %}
-                  <small class="text-secondary">Tags: {{ scenario.tags | join(', ') }}</small>
-                {% endif %}
-              </a>
-            {% endfor %}
-          </div>
-        </section>
-      {% endfor %}
-    {% else %}
-      <p class="text-muted">No scenarios have been added yet.</p>
-    {% endif %}
-  </div>
-  <p class="text-muted d-none" id="scenario-no-results">No scenarios match your search.</p>
-</div>
+{% block sidebar %}
+  {% include "layout/_sidebar.html" %}
 {% endblock %}
 
-{% block scripts %}
+{% block content %}
+  <section class="d-flex flex-column h-100" id="agents-factory">
+    <div class="card border-0 shadow-sm flex-grow-1">
+      <div class="card-header bg-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+          <p class="text-uppercase text-muted small fw-semibold mb-1">Active scenario</p>
+          <h1 class="h3 mb-0" id="active-scenario-title">Select a scenario to begin</h1>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <button class="btn btn-outline-secondary btn-sm" type="button" data-action="restart-scenario">
+            <i class="fa-solid fa-arrow-rotate-left me-1"></i>Restart
+          </button>
+          <button class="btn btn-outline-primary btn-sm" type="button" data-action="copy-transcript">
+            <i class="fa-regular fa-copy me-1"></i>Copy transcript
+          </button>
+        </div>
+      </div>
+      <div class="card-body p-0 d-flex flex-column">
+        <div class="px-4 pt-4 pb-3 border-bottom">
+          <div class="d-flex flex-wrap gap-3 align-items-center text-muted small" id="active-scenario-meta">
+            <span class="d-inline-flex align-items-center gap-2">
+              <i class="fa-solid fa-folder-tree text-primary"></i>
+              <span id="active-scenario-category">No category</span>
+            </span>
+            <span class="d-inline-flex align-items-center gap-2">
+              <i class="fa-solid fa-file-code text-primary"></i>
+              <span id="active-scenario-filename">—</span>
+            </span>
+            <span class="d-inline-flex align-items-center gap-2">
+              <i class="fa-solid fa-tags text-primary"></i>
+              <span id="active-scenario-tags">Add tags to improve discovery</span>
+            </span>
+          </div>
+        </div>
+        <div class="chat-transcript flex-grow-1 px-4 py-4" id="chat-transcript" aria-live="polite">
+          {% set conversation = conversation | default([]) %}
+          {% if conversation %}
+            {% for message in conversation %}
+              {% include "layout/_chat_message.html" %}
+            {% endfor %}
+          {% else %}
+            <div class="text-center text-muted py-5" id="chat-empty-state">
+              <i class="fa-solid fa-robot display-4 mb-3 text-primary"></i>
+              <p class="lead mb-1">Choose a scenario from the left panel to preview the scripted conversation.</p>
+              <p class="small text-secondary mb-0">Messages will appear here as the scenario plays through each step.</p>
+            </div>
+          {% endif %}
+        </div>
+        <div class="card-footer bg-body">
+          <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <button class="btn btn-outline-secondary btn-sm" type="button" data-action="restart-scenario">
+                <i class="fa-solid fa-power-off me-1"></i>Restart playback
+              </button>
+              <button class="btn btn-outline-primary btn-sm" type="button" data-action="copy-transcript">
+                <i class="fa-regular fa-clipboard me-1"></i>Copy to clipboard
+              </button>
+            </div>
+            <div class="input-group input-group-sm w-auto flex-grow-1 flex-lg-grow-0" role="presentation">
+              <span class="input-group-text bg-body-secondary border-0">
+                <i class="fa-regular fa-message"></i>
+              </span>
+              <input
+                class="form-control border-0"
+                type="text"
+                placeholder="Live input disabled in this demo"
+                aria-label="Demo input disabled"
+                disabled
+              />
+              <button class="btn btn-outline-secondary" type="button" disabled>Send</button>
+            </div>
+          </div>
+          <p class="text-muted small mb-0 mt-3" id="chat-helper-text">
+            Conversations are scripted to highlight Reflex capabilities. Use the restart button to replay a scenario or copy the transcript for documentation.
+          </p>
+          <div class="visually-hidden" id="chat-feedback" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+
+    <section class="mt-4" id="help-center">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h2 class="h4 mb-3">Need a hand?</h2>
+          <p class="text-muted mb-2">
+            Each scenario demonstrates a tailored conversation flow. Duplicate an existing scenario from the admin dashboard to use as a starting point, or create a new one to tell a different story.
+          </p>
+          <ul class="mb-0 text-muted small">
+            <li>Select a scenario card to load its metadata and start the scripted chat.</li>
+            <li>Use the search box or category filters in the sidebar to quickly narrow down the list.</li>
+            <li>Leverage the copy button to share transcripts with your team or drop them into docs.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </section>
+{% endblock %}
+
+{% block scripts_extra %}
   {{ super() }}
   <script>
     const SCENARIO_DATA = {{ scenarios | tojson }};
@@ -71,10 +112,20 @@
 
     (function () {
       const searchInput = document.getElementById("scenario-search");
-      const groupsContainer = document.getElementById("scenario-groups");
+      const categoryTabs = document.querySelectorAll("[data-category-tab]");
+      const scenarioCards = Array.from(document.querySelectorAll("[data-scenario-card]"));
+      const scenarioGroups = document.getElementById("scenario-groups");
       const emptyState = document.getElementById("scenario-no-results");
+      const activeTitle = document.getElementById("active-scenario-title");
+      const activeCategory = document.getElementById("active-scenario-category");
+      const activeFilename = document.getElementById("active-scenario-filename");
+      const activeTags = document.getElementById("active-scenario-tags");
+      const chatFeedback = document.getElementById("chat-feedback");
+      const copyButtons = document.querySelectorAll('[data-action="copy-transcript"]');
+      const restartButtons = document.querySelectorAll('[data-action="restart-scenario"]');
+      const chatTranscript = document.getElementById("chat-transcript");
 
-      if (!searchInput || !groupsContainer) {
+      if (!scenarioGroups) {
         return;
       }
 
@@ -82,66 +133,166 @@
         SCENARIO_DATA.map((item) => [String(item.id), item])
       );
 
-      function updateSearch(term) {
-        const normalized = term.trim().toLowerCase();
+      let activeCategoryFilter = "__all__";
+
+      function setFeedback(message) {
+        if (!chatFeedback) {
+          return;
+        }
+        chatFeedback.textContent = "";
+        if (message) {
+          void chatFeedback.offsetHeight;
+          chatFeedback.textContent = message;
+        }
+      }
+
+      function applyFilters() {
+        const term = (searchInput?.value || "").trim().toLowerCase();
         let visibleCount = 0;
 
-        groupsContainer
-          .querySelectorAll("section[data-category]")
+        scenarioGroups
+          .querySelectorAll("[data-category-panel]")
           .forEach((section) => {
-            const items = section.querySelectorAll("[data-scenario-id]");
             let sectionVisible = 0;
+            section.querySelectorAll("[data-scenario-card]").forEach((card) => {
+              const cardCategory = card.dataset.scenarioCategory;
+              const searchText = card.dataset.searchText || "";
+              const matchesCategory =
+                activeCategoryFilter === "__all__" || cardCategory === activeCategoryFilter;
+              const matchesSearch = !term || searchText.includes(term);
 
-            items.forEach((element) => {
-              const item = scenarioLookup.get(element.dataset.scenarioId);
-              if (!item) {
-                element.classList.add("d-none");
-                return;
-              }
-
-              const haystack = [
-                item.title,
-                item.description || "",
-                Array.isArray(item.tags) ? item.tags.join(" ") : "",
-              ]
-                .join(" ")
-                .toLowerCase();
-
-              if (!normalized || haystack.includes(normalized)) {
-                element.classList.remove("d-none");
-                sectionVisible += 1;
+              if (matchesCategory && matchesSearch) {
+                card.classList.remove("d-none");
                 visibleCount += 1;
+                sectionVisible += 1;
               } else {
-                element.classList.add("d-none");
+                card.classList.add("d-none");
               }
             });
 
             section.classList.toggle("d-none", sectionVisible === 0);
           });
 
-        const hasResults = normalized === "" || visibleCount > 0;
         if (emptyState) {
-          emptyState.classList.toggle("d-none", hasResults);
+          emptyState.classList.toggle("d-none", visibleCount > 0);
         }
       }
 
-      searchInput.addEventListener("input", (event) => {
-        updateSearch(event.target.value);
+      function setActiveScenario(id) {
+        const activeId = String(id || "");
+        scenarioCards.forEach((card) => {
+          const isActive = card.dataset.scenarioId === activeId;
+          card.classList.toggle("active", isActive);
+          card.setAttribute("aria-current", isActive ? "true" : "false");
+        });
+
+        const data = scenarioLookup.get(activeId);
+        if (!data) {
+          if (activeTitle) {
+            activeTitle.textContent = "Select a scenario to begin";
+          }
+          if (activeCategory) {
+            activeCategory.textContent = "No category";
+          }
+          if (activeFilename) {
+            activeFilename.textContent = "—";
+          }
+          if (activeTags) {
+            activeTags.textContent = "Add tags to improve discovery";
+          }
+          return;
+        }
+
+        if (activeTitle) {
+          activeTitle.textContent = data.title || data.id;
+        }
+        if (activeCategory) {
+          activeCategory.textContent = data.category || "Uncategorized";
+        }
+        if (activeFilename) {
+          activeFilename.textContent = data.filename || `${data.id}.json`;
+        }
+        if (activeTags) {
+          if (Array.isArray(data.tags) && data.tags.length > 0) {
+            activeTags.textContent = data.tags.join(", ");
+          } else {
+            activeTags.textContent = "No tags provided";
+          }
+        }
+
+        document.dispatchEvent(
+          new CustomEvent("scenario:selected", {
+            detail: { scenario: data },
+          })
+        );
+      }
+
+      categoryTabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          categoryTabs.forEach((item) => item.classList.remove("active"));
+          tab.classList.add("active");
+          activeCategoryFilter = tab.dataset.categoryTab || "__all__";
+          applyFilters();
+        });
       });
 
-      if (searchInput.value) {
-        updateSearch(searchInput.value);
+      if (searchInput) {
+        searchInput.addEventListener("input", () => {
+          applyFilters();
+        });
       }
 
+      scenarioCards.forEach((card) => {
+        card.addEventListener("click", (event) => {
+          const scenarioId = card.dataset.scenarioId;
+          if (!scenarioId) {
+            return;
+          }
+          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
+            return;
+          }
+          event.preventDefault();
+          setActiveScenario(scenarioId);
+          const url = new URL(window.location.href);
+          url.searchParams.set("scenario", scenarioId);
+          window.history.replaceState({}, "", url);
+        });
+      });
+
+      copyButtons.forEach((button) => {
+        button.addEventListener("click", async () => {
+          if (!chatTranscript) {
+            return;
+          }
+          const text = chatTranscript.innerText.trim();
+          if (!text) {
+            setFeedback("There is no transcript to copy yet.");
+            return;
+          }
+          try {
+            await navigator.clipboard.writeText(text);
+            setFeedback("Transcript copied to your clipboard.");
+          } catch (error) {
+            console.error("Clipboard copy failed", error);
+            setFeedback("Unable to copy transcript. Try using Ctrl+C instead.");
+          }
+        });
+      });
+
+      restartButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          document.dispatchEvent(new CustomEvent("scenario:restart"));
+          setFeedback("Scenario reset. Ready to play again.");
+        });
+      });
+
       if (SELECTED_SCENARIO) {
-        const active = groupsContainer.querySelector(
-          `[data-scenario-id="${CSS.escape(String(SELECTED_SCENARIO))}"]`
-        );
-        if (active) {
-          active.classList.add("active");
-          active.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
+        setActiveScenario(SELECTED_SCENARIO);
+      } else if (scenarioCards.length) {
+        setActiveScenario(scenarioCards[0].dataset.scenarioId);
       }
+
+      applyFilters();
     })();
   </script>
 {% endblock %}

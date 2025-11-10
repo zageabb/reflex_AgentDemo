@@ -1,31 +1,21 @@
 {% extends "base.html" %}
 
-{% block title %}Manage Uploads · Reflex Demo{% endblock %}
+{% block title %}Manage Uploads · Reflex Agents Factory{% endblock %}
 
 {% block content %}
   <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
+        <p class="text-uppercase text-muted small fw-semibold mb-1">Content management</p>
         <h1 class="h3 mb-1">Snippet Uploads</h1>
         <p class="text-muted mb-0">Upload reusable HTML or text snippets for scenarios.</p>
       </div>
       <a class="btn btn-outline-primary" href="{{ url_for('admin.dashboard') }}">Back to Dashboard</a>
     </div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
     <div class="row g-4">
       <div class="col-lg-5">
-        <div class="card shadow-sm">
+        <div class="card shadow-sm border-0">
           <div class="card-body">
             <h2 class="h5 mb-3">Upload a new snippet</h2>
             <form method="post" enctype="multipart/form-data" action="{{ url_for('admin.upload_file') }}">
@@ -46,7 +36,7 @@
         </div>
       </div>
       <div class="col-lg-7">
-        <div class="card shadow-sm h-100">
+        <div class="card shadow-sm border-0 h-100">
           <div class="card-body">
             <h2 class="h5 mb-3">Existing uploads</h2>
             {% if uploads %}
