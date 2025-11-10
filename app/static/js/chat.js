@@ -236,15 +236,49 @@
       return;
     }
     ensureTranscriptContainer();
-    const { wrapper, content } = createMessageSkeleton("user", step.speaker || step.actorLabel);
-    if (step.message_html) {
-      content.innerHTML = step.message_html;
-    } else {
-      const message = step.message || step.text || "";
-      content.innerHTML = formatTextContent(String(message));
+
+    const typingIndicator = createTypingIndicator("user");
+    const typingWrapper = document.createElement("div");
+    typingWrapper.className = "chat-message d-flex gap-3 justify-content-end";
+    typingWrapper.dataset.messageRole = "user";
+    const typingBubble = document.createElement("div");
+    typingBubble.className = "chat-bubble shadow-sm";
+    typingBubble.appendChild(typingIndicator);
+    typingWrapper.appendChild(typingBubble);
+    chatTranscript.appendChild(typingWrapper);
+    scrollTranscript();
+
+    const fallbackMessage = step.message || step.text || "";
+    const typingDelay =
+      typeof step.typingDelay === "number"
+        ? step.typingDelay
+        : Math.min(1400, Math.max(400, String(fallbackMessage).length * 20));
+    await sleep(typingDelay);
+
+    if (token !== playbackToken) {
+      typingWrapper.remove();
+      return;
     }
+
+    typingWrapper.remove();
+
+    const { wrapper, content } = createMessageSkeleton("user", step.speaker || step.actorLabel);
     chatTranscript.appendChild(wrapper);
     scrollTranscript();
+
+    if (step.message_html) {
+      content.innerHTML = step.message_html;
+    } else if (fallbackMessage) {
+      await typeText(content, String(fallbackMessage), token);
+      if (token !== playbackToken) {
+        return;
+      }
+    }
+
+    if (!step.message_html && !fallbackMessage) {
+      content.innerHTML = "";
+    }
+
     if (typeof step.pause === "number") {
       await sleep(Math.max(0, step.pause));
     }
