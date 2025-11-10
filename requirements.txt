@@ -1,0 +1,8 @@
+Flask>=3.0,<4.0
+Flask-Login
+Flask-WTF
+SQLAlchemy
+email-validator
+python-dotenv
+gunicorn
+passlib[bcrypt]
