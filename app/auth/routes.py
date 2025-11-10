@@ -9,7 +9,7 @@ from flask.typing import ResponseReturnValue
 from flask_login import current_user, login_required, login_user, logout_user
 from flask_wtf import FlaskForm
 from sqlalchemy import func
-from werkzeug.urls import url_parse
+from urllib.parse import urlsplit
 from wtforms import EmailField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, Length
 
@@ -77,7 +77,7 @@ def login() -> ResponseReturnValue:
             login_user(user)
             flash("Successfully signed in.", "success")
             next_page = request.args.get("next")
-            if not next_page or url_parse(next_page).netloc:
+            if not next_page or urlsplit(next_page).netloc:
                 next_page = url_for("main.index")
             return redirect(next_page)
 
