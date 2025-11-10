@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING, Type
 
@@ -12,6 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 
 from config import CONFIG_MAPPING, Config
+from data.snippets import sync_snippet_tree
 
 
 db = SQLAlchemy()
@@ -61,16 +61,7 @@ def _seed_snippets(app: Flask, upload_dir: Path) -> None:
     if not source_dir.exists():
         return
 
-    target_dir = upload_dir / "snippets"
-    target_dir.mkdir(parents=True, exist_ok=True)
-
-    for source_file in source_dir.iterdir():
-        if not source_file.is_file():
-            continue
-        destination = target_dir / source_file.name
-        if destination.exists():
-            continue
-        shutil.copy2(source_file, destination)
+    sync_snippet_tree(source_dir, upload_dir)
 
 
 def _register_blueprints(app: Flask) -> None:
