@@ -50,9 +50,24 @@
     {{ form.hidden_tag() }}
     <div class="card-body">
       <div class="mb-3">
-        <label class="form-label" for="scenario-editor">Scenario JSON</label>
-        <div id="scenario-editor" class="border rounded" style="min-height: 520px">{{ form.content.data | e }}</div>
-        {{ form.content(class="d-none", id="scenario-editor-input") }}
+        <label class="form-label" for="scenario-editor-input">Scenario JSON</label>
+        <div>
+          {{
+            form.content(
+              class="form-control font-monospace",
+              id="scenario-editor-input",
+              rows=18,
+              spellcheck="false",
+              style="min-height: 520px;"
+            )
+          }}
+          <div
+            id="scenario-editor"
+            class="border rounded d-none font-monospace"
+            style="min-height: 520px;"
+            aria-hidden="true"
+          ></div>
+        </div>
         {% for error in form.content.errors %}
           <div class="text-danger small">{{ error }}</div>
         {% endfor %}
@@ -96,7 +111,13 @@
         minLines: 20,
         maxLines: Infinity,
       });
-      editor.session.setValue(textarea.value);
+
+      const initialValue = textarea.value || textarea.textContent || "";
+      editor.session.setValue(initialValue);
+      editorElement.classList.remove("d-none");
+      editorElement.setAttribute("aria-hidden", "false");
+      textarea.classList.add("d-none");
+      textarea.setAttribute("aria-hidden", "true");
 
       function setFeedback(message, level) {
         if (!feedback) {
