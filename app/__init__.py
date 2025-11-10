@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import shutil
 from pathlib import Path
+from typing import TYPE_CHECKING, Type
 
 from dotenv import load_dotenv
 from flask import Flask
@@ -37,7 +38,10 @@ def create_app(config_name: str | None = None) -> Flask:
     csrf.init_app(app)
     login_manager.login_view = "auth.login"
 
+    from . import models  # noqa: F401  # Ensure models are registered
+
     _register_blueprints(app)
+    _initialize_database(app)
 
     return app
 
@@ -77,6 +81,39 @@ def _register_blueprints(app: Flask) -> None:
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(admin_bp)
+
+
+def _initialize_database(app: Flask) -> None:
+    """Create database tables and seed initial data."""
+
+    from .models import User
+
+    with app.app_context():
+        db.create_all()
+        _seed_admin_user(User)
+
+
+if TYPE_CHECKING:  # pragma: no cover - imported for typing only
+    from .models import User
+
+
+def _seed_admin_user(user_model: Type["User"]) -> None:
+    """Create an initial admin user from environment variables."""
+
+    username = os.getenv("ADMIN_USER")
+    password = os.getenv("ADMIN_PASSWORD")
+
+    if not username or not password:
+        return
+
+    existing_user = user_model.query.filter_by(username=username).first()
+    if existing_user:
+        return
+
+    admin_user = user_model(username=username, is_admin=True)
+    admin_user.set_password(password)
+    db.session.add(admin_user)
+    db.session.commit()
 
 
 __all__ = ["create_app", "db", "login_manager", "csrf"]
