@@ -50,7 +50,8 @@ Remember to restart the dev server after tweaking `.env` files. Flask caches con
    ```bash
    flask run
    ```
-5. Visit `http://127.0.0.1:5000/` in your browser. The admin dashboard lives under `/admin`.
+   The included `.flaskenv` pins the dev server to port `5010`, so you don't need to add `--port` manually.
+5. Visit `http://127.0.0.1:5010/` in your browser. The admin dashboard lives under `/admin`.
 
 `flask run` respects the `.env` file; your secrets and database URL are injected automatically. For production you should run the app through `gunicorn` or another WSGI server and set environment variables outside of `.env`.
 
