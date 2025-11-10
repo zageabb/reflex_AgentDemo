@@ -7,100 +7,85 @@
 {% endblock %}
 
 {% block content %}
-  <section class="d-flex flex-column h-100" id="agents-factory" data-accent="indigo">
-    <div class="card border-0 shadow-sm flex-grow-1">
-      <div class="card-header bg-body d-flex flex-wrap justify-content-between align-items-center gap-3">
-        <div>
-          <p class="text-uppercase text-muted small fw-semibold mb-1">Active scenario</p>
-          <h1 class="h3 mb-0" id="active-scenario-title">Select a scenario to begin</h1>
+  <section class="d-flex flex-column gap-4" id="agents-factory" data-accent="indigo">
+    <header class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+      <div>
+        <h1 class="h3 mb-1" id="active-scenario-title">Select a scenario to begin</h1>
+        <div class="d-flex flex-wrap gap-3 align-items-center text-muted small" id="active-scenario-meta">
+          <span class="d-inline-flex align-items-center gap-2" data-role="accent-pill">
+            <i class="fa-solid fa-folder-tree"></i>
+            <span id="active-scenario-category">No category</span>
+          </span>
+          <span class="d-inline-flex align-items-center gap-2" data-role="accent-pill">
+            <i class="fa-solid fa-file-code"></i>
+            <span id="active-scenario-filename">—</span>
+          </span>
+          <span class="d-inline-flex align-items-center gap-2" data-role="accent-pill">
+            <i class="fa-solid fa-tags"></i>
+            <span id="active-scenario-tags">Add tags to improve discovery</span>
+          </span>
         </div>
-        <div class="d-flex align-items-center gap-2 flex-wrap">
+      </div>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button class="btn btn-outline-secondary btn-sm" type="button" data-action="restart-scenario">
+          <i class="fa-solid fa-arrow-rotate-left me-1"></i>Restart
+        </button>
+        <button class="btn btn-outline-primary btn-sm" type="button" data-action="copy-transcript">
+          <i class="fa-regular fa-copy me-1"></i>Copy transcript
+        </button>
+      </div>
+    </header>
+
+    <div class="chat-surface d-flex flex-column gap-3">
+      <div
+        class="chat-transcript flex-grow-1 px-4 py-4 border rounded-4 bg-body shadow-sm"
+        id="chat-transcript"
+        aria-live="polite"
+        data-empty="true"
+      >
+        {% set conversation = conversation | default([]) %}
+        {% if conversation %}
+          {% for message in conversation %}
+            {% include "layout/_chat_message.html" %}
+          {% endfor %}
+        {% else %}
+          <div class="text-center text-muted py-5" id="chat-empty-state">
+            <i class="fa-solid fa-robot display-4 mb-3 text-primary"></i>
+            <p class="lead mb-1">Choose a scenario from the left panel to preview the scripted conversation.</p>
+            <p class="small text-secondary mb-0">Messages will appear here as the scenario plays through each step.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
           <button class="btn btn-outline-secondary btn-sm" type="button" data-action="restart-scenario">
-            <i class="fa-solid fa-arrow-rotate-left me-1"></i>Restart
+            <i class="fa-solid fa-power-off me-1"></i>Restart playback
           </button>
           <button class="btn btn-outline-primary btn-sm" type="button" data-action="copy-transcript">
-            <i class="fa-regular fa-copy me-1"></i>Copy transcript
+            <i class="fa-regular fa-clipboard me-1"></i>Copy to clipboard
           </button>
         </div>
-      </div>
-      <div class="card-body p-0 d-flex flex-column">
-        <div class="px-4 pt-4 pb-3 border-bottom">
-          <div class="d-flex flex-wrap gap-3 align-items-center text-muted small" id="active-scenario-meta">
-            <span class="d-inline-flex align-items-center gap-2" data-role="accent-pill">
-              <i class="fa-solid fa-folder-tree"></i>
-              <span id="active-scenario-category">No category</span>
-            </span>
-            <span class="d-inline-flex align-items-center gap-2" data-role="accent-pill">
-              <i class="fa-solid fa-file-code"></i>
-              <span id="active-scenario-filename">—</span>
-            </span>
-            <span class="d-inline-flex align-items-center gap-2" data-role="accent-pill">
-              <i class="fa-solid fa-tags"></i>
-              <span id="active-scenario-tags">Add tags to improve discovery</span>
-            </span>
-          </div>
-        </div>
-        <div class="chat-transcript flex-grow-1 px-4 py-4" id="chat-transcript" aria-live="polite" data-empty="true">
-          {% set conversation = conversation | default([]) %}
-          {% if conversation %}
-            {% for message in conversation %}
-              {% include "layout/_chat_message.html" %}
-            {% endfor %}
-          {% else %}
-            <div class="text-center text-muted py-5" id="chat-empty-state">
-              <i class="fa-solid fa-robot display-4 mb-3 text-primary"></i>
-              <p class="lead mb-1">Choose a scenario from the left panel to preview the scripted conversation.</p>
-              <p class="small text-secondary mb-0">Messages will appear here as the scenario plays through each step.</p>
-            </div>
-          {% endif %}
-        </div>
-        <div class="card-footer bg-body">
-          <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
-            <div class="d-flex align-items-center gap-2">
-              <button class="btn btn-outline-secondary btn-sm" type="button" data-action="restart-scenario">
-                <i class="fa-solid fa-power-off me-1"></i>Restart playback
-              </button>
-              <button class="btn btn-outline-primary btn-sm" type="button" data-action="copy-transcript">
-                <i class="fa-regular fa-clipboard me-1"></i>Copy to clipboard
-              </button>
-            </div>
-            <div class="input-group input-group-sm w-auto flex-grow-1 flex-lg-grow-0" role="presentation">
-              <span class="input-group-text bg-body-secondary border-0">
-                <i class="fa-regular fa-message"></i>
-              </span>
-              <input
-                class="form-control border-0"
-                type="text"
-                placeholder="Live input disabled in this demo"
-                aria-label="Demo input disabled"
-                disabled
-              />
-              <button class="btn btn-outline-secondary" type="button" disabled>Send</button>
-            </div>
-          </div>
-          <p class="text-muted small mb-0 mt-3" id="chat-helper-text">
-            Conversations are scripted to highlight Reflex capabilities. Use the restart button to replay a scenario or copy the transcript for documentation.
-          </p>
-          <div class="visually-hidden" id="chat-feedback" role="status" aria-live="polite"></div>
+        <div class="input-group input-group-sm w-auto flex-grow-1 flex-lg-grow-0" role="presentation">
+          <span class="input-group-text bg-body-secondary border-0">
+            <i class="fa-regular fa-message"></i>
+          </span>
+          <input
+            class="form-control border-0"
+            type="text"
+            placeholder="Live input disabled in this demo"
+            aria-label="Demo input disabled"
+            disabled
+          />
+          <button class="btn btn-outline-secondary" type="button" disabled>Send</button>
         </div>
       </div>
-    </div>
 
-    <section class="mt-4" id="help-center">
-      <div class="card border-0 shadow-sm">
-        <div class="card-body">
-          <h2 class="h4 mb-3">Need a hand?</h2>
-          <p class="text-muted mb-2">
-            Each scenario demonstrates a tailored conversation flow. Duplicate an existing scenario from the admin dashboard to use as a starting point, or create a new one to tell a different story.
-          </p>
-          <ul class="mb-0 text-muted small">
-            <li>Select a scenario card to load its metadata and start the scripted chat.</li>
-            <li>Use the search box or category filters in the sidebar to quickly narrow down the list.</li>
-            <li>Leverage the copy button to share transcripts with your team or drop them into docs.</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+      <p class="text-muted small mb-0" id="chat-helper-text">
+        Conversations are scripted to highlight Reflex capabilities. Use the restart button to replay a scenario or copy the transcript for documentation.
+      </p>
+      <div class="visually-hidden" id="chat-feedback" role="status" aria-live="polite"></div>
+    </div>
   </section>
 {% endblock %}
 
