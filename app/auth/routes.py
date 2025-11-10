@@ -10,8 +10,8 @@ from flask_login import current_user, login_required, login_user, logout_user
 from flask_wtf import FlaskForm
 from sqlalchemy import func
 from urllib.parse import urlsplit
-from wtforms import EmailField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email, Length
+from wtforms import PasswordField, StringField, SubmitField
+from wtforms.validators import DataRequired, Length
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -23,12 +23,12 @@ _DUMMY_PASSWORD_HASH = generate_password_hash("dummy-password")
 
 
 class LoginForm(FlaskForm):
-    """Login form that authenticates via email and password."""
+    """Login form that authenticates via email or username and password."""
 
-    email = EmailField(
-        "Email",
-        validators=[DataRequired(), Email()],
-        render_kw={"autocomplete": "email"},
+    identifier = StringField(
+        "Email or Username",
+        validators=[DataRequired(), Length(max=255)],
+        render_kw={"autocomplete": "username"},
     )
     password = PasswordField(
         "Password",
@@ -62,17 +62,33 @@ def login() -> ResponseReturnValue:
 
     form = LoginForm()
     if form.validate_on_submit():
-        email_input = form.email.data.strip().lower()
-        user = User.query.filter(func.lower(User.email) == email_input).first()
+        identifier_raw = form.identifier.data.strip()
+        identifier_input = identifier_raw.lower()
+
+        match_attr = None
+        user = User.query.filter(func.lower(User.email) == identifier_input).first()
+        if user:
+            match_attr = "email"
+        if not user:
+            user = User.query.filter(func.lower(User.username) == identifier_input).first()
+            if user:
+                match_attr = "username"
 
         password_hash = user.password_hash if user else _DUMMY_PASSWORD_HASH
         password_matches = _verify_password(password_hash, form.password.data)
-        stored_email = (user.email or "").lower() if user else ""
-        email_matches = user is not None and secrets.compare_digest(
-            stored_email, email_input
+
+        if match_attr == "email":
+            stored_identifier = (user.email or "").lower()
+        elif match_attr == "username":
+            stored_identifier = (user.username or "").lower()
+        else:
+            stored_identifier = ""
+
+        identifier_matches = user is not None and secrets.compare_digest(
+            stored_identifier, identifier_input
         )
 
-        if user and email_matches and password_matches:
+        if user and identifier_matches and password_matches:
             login_user(user)
             flash("Successfully signed in.", "success")
             next_page = request.args.get("next")
