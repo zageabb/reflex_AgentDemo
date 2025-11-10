@@ -5,10 +5,7 @@ from flask import Blueprint
 bp = Blueprint("main", __name__)
 
 
-@bp.route("/")
-def index() -> str:
-    """Root landing page placeholder."""
-    return "Welcome to the Reflex Agent Demo"
+from . import routes  # noqa: E402,F401  # Import views to register routes
 
 
 __all__ = ["bp"]
