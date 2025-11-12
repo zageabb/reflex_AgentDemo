@@ -66,8 +66,17 @@
             <i class="fa-regular fa-clipboard me-1"></i>Copy to clipboard
           </button>
         </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm" id="chat-input-card">
+      <div class="card-body d-flex flex-column gap-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="fa-regular fa-keyboard text-primary"></i>
+          <h2 class="h6 mb-0">Compose a message</h2>
+        </div>
         <form
-          class="input-group input-group-sm w-auto flex-grow-1 flex-lg-grow-0"
+          class="input-group input-group-sm w-100"
           id="chat-input-form"
           autocomplete="off"
         >
@@ -89,13 +98,12 @@
             Send
           </button>
         </form>
+        <p class="text-muted small mb-0" id="chat-helper-text">
+          Conversations are scripted to highlight Reflex capabilities. Use the restart button to replay a scenario or copy the transcript for documentation.
+        </p>
       </div>
-
-      <p class="text-muted small mb-0" id="chat-helper-text">
-        Conversations are scripted to highlight Reflex capabilities. Use the restart button to replay a scenario or copy the transcript for documentation.
-      </p>
-      <div class="visually-hidden" id="chat-feedback" role="status" aria-live="polite"></div>
     </div>
+    <div class="visually-hidden" id="chat-feedback" role="status" aria-live="polite"></div>
   </section>
 {% endblock %}
 
