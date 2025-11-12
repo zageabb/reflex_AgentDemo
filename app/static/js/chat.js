@@ -123,21 +123,19 @@
   function createMessageSkeleton(role, speaker) {
     const isUser = role === "user";
     const wrapper = document.createElement("div");
-    wrapper.className = `chat-message d-flex gap-3${isUser ? " justify-content-end" : ""}`;
+    wrapper.className = "chat-message d-flex gap-3";
     wrapper.dataset.messageRole = role;
 
-    if (!isUser) {
-      const icon = document.createElement("div");
-      icon.className = "flex-shrink-0 chat-icon fs-4";
-      icon.innerHTML = '<i class="fa-solid fa-robot"></i>';
-      wrapper.appendChild(icon);
-    }
+    const icon = document.createElement("div");
+    icon.className = "flex-shrink-0 chat-icon fs-4";
+    icon.innerHTML = `<i class="fa-solid ${isUser ? "fa-user" : "fa-robot"}"></i>`;
+    wrapper.appendChild(icon);
 
     const bubble = document.createElement("div");
     bubble.className = "chat-bubble shadow-sm";
 
     const header = document.createElement("div");
-    header.className = "d-flex justify-content-between align-items-start gap-3 mb-2";
+    header.className = "d-flex align-items-start gap-3 mb-2";
 
     const meta = document.createElement("div");
     meta.className = "d-flex flex-column";
@@ -147,13 +145,6 @@
     meta.appendChild(sender);
     header.appendChild(meta);
 
-    if (isUser) {
-      const icon = document.createElement("div");
-      icon.className = "text-primary fs-5";
-      icon.innerHTML = '<i class="fa-solid fa-user"></i>';
-      header.appendChild(icon);
-    }
-
     bubble.appendChild(header);
 
     const body = document.createElement("div");
@@ -162,11 +153,9 @@
 
     wrapper.appendChild(bubble);
 
-    if (!isUser) {
-      const spacer = document.createElement("div");
-      spacer.className = "flex-grow-1";
-      wrapper.appendChild(spacer);
-    }
+    const spacer = document.createElement("div");
+    spacer.className = "flex-grow-1";
+    wrapper.appendChild(spacer);
 
     return { wrapper, content: body };
   }
@@ -239,12 +228,19 @@
 
     const typingIndicator = createTypingIndicator("user");
     const typingWrapper = document.createElement("div");
-    typingWrapper.className = "chat-message d-flex gap-3 justify-content-end";
+    typingWrapper.className = "chat-message d-flex gap-3";
     typingWrapper.dataset.messageRole = "user";
+    const typingIcon = document.createElement("div");
+    typingIcon.className = "flex-shrink-0 chat-icon fs-4";
+    typingIcon.innerHTML = '<i class="fa-solid fa-user"></i>';
+    typingWrapper.appendChild(typingIcon);
     const typingBubble = document.createElement("div");
     typingBubble.className = "chat-bubble shadow-sm";
     typingBubble.appendChild(typingIndicator);
     typingWrapper.appendChild(typingBubble);
+    const typingSpacer = document.createElement("div");
+    typingSpacer.className = "flex-grow-1";
+    typingWrapper.appendChild(typingSpacer);
     chatTranscript.appendChild(typingWrapper);
     scrollTranscript();
 
@@ -287,7 +283,7 @@
   function createTypingIndicator(role) {
     const indicator = document.createElement("div");
     indicator.className = "chat-typing-indicator";
-    indicator.dataset.align = role === "user" ? "end" : "start";
+    indicator.dataset.align = "start";
     indicator.innerHTML =
       '<span class="spinner-border" role="status" aria-hidden="true"></span><span>Typing…</span>';
     return indicator;
