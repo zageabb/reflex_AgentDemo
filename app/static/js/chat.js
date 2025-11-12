@@ -25,6 +25,9 @@
   const chatEmptyState = document.getElementById("chat-empty-state");
   const helperText = document.getElementById("chat-helper-text");
   const container = document.getElementById("agents-factory");
+  const chatForm = document.getElementById("chat-input-form");
+  const chatInput = document.getElementById("chat-user-input");
+  const chatSendButton = document.getElementById("chat-send-button");
 
   if (!scenarioGroups || !chatTranscript) {
     return;
@@ -289,6 +292,17 @@
     return indicator;
   }
 
+  function appendUserMessage(text) {
+    if (!chatTranscript) {
+      return;
+    }
+    ensureTranscriptContainer();
+    const { wrapper, content } = createMessageSkeleton("user");
+    content.innerHTML = formatTextContent(text);
+    chatTranscript.appendChild(wrapper);
+    scrollTranscript();
+  }
+
   async function renderAgent(step, token) {
     if (token !== playbackToken) {
       return;
@@ -370,6 +384,44 @@
     if (typeof step.pause === "number") {
       await sleep(Math.max(0, step.pause));
     }
+  }
+
+  function updatePromptState() {
+    if (!chatSendButton) {
+      return;
+    }
+    const hasValue = Boolean(chatInput?.value.trim());
+    chatSendButton.disabled = !hasValue;
+  }
+
+  function bindPromptForm() {
+    if (!chatForm || !chatInput) {
+      return;
+    }
+
+    chatForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!chatInput || chatInput.disabled) {
+        return;
+      }
+      const value = chatInput.value.trim();
+      if (!value) {
+        setFeedback("Type a message before sending.");
+        updatePromptState();
+        return;
+      }
+      appendUserMessage(value);
+      chatInput.value = "";
+      updatePromptState();
+      setFeedback("Message added to the conversation.");
+      chatInput.focus();
+    });
+
+    chatInput.addEventListener("input", () => {
+      updatePromptState();
+    });
+
+    updatePromptState();
   }
 
   async function playScenario(id, { restart = false } = {}) {
@@ -625,6 +677,7 @@
     bindScenarioCards();
     bindCopy();
     bindRestart();
+    bindPromptForm();
 
     if (searchInput) {
       searchInput.addEventListener("input", () => applyFilters());
