@@ -103,24 +103,44 @@ body {
   margin-top: 1rem;
 }
 
+.chat-message {
+  align-items: flex-start;
+}
+
+.chat-message .chat-icon {
+  color: var(--scenario-accent);
+}
+
+.chat-message[data-message-role="user"] .chat-icon {
+  color: var(--scenario-accent);
+  color: color-mix(in srgb, var(--scenario-accent) 60%, white);
+}
+
 .chat-message[data-message-role="assistant"] .chat-bubble {
   background: var(--bs-body-bg);
   border: 1px solid var(--bs-border-color);
 }
 
-.chat-message[data-message-role="assistant"] .chat-icon,
 .chat-message[data-message-role="assistant"] .chat-sender {
   color: var(--scenario-accent);
 }
 
 .chat-message[data-message-role="user"] .chat-bubble {
-  background: var(--scenario-accent);
-  color: #fff;
+  background: var(--scenario-accent-soft);
+  background: color-mix(in srgb, var(--scenario-accent) 18%, white);
+  color: var(--bs-body-color);
+  border: 1px solid var(--scenario-accent-soft);
+  border-color: color-mix(in srgb, var(--scenario-accent) 35%, transparent);
 }
 
 .chat-message[data-message-role="user"] .chat-bubble a {
   color: inherit;
   text-decoration: underline;
+}
+
+.chat-message[data-message-role="user"] .chat-sender {
+  color: var(--scenario-accent);
+  color: color-mix(in srgb, var(--scenario-accent) 55%, black);
 }
 
 .chat-bubble {
