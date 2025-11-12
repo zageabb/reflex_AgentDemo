@@ -66,19 +66,29 @@
             <i class="fa-regular fa-clipboard me-1"></i>Copy to clipboard
           </button>
         </div>
-        <div class="input-group input-group-sm w-auto flex-grow-1 flex-lg-grow-0" role="presentation">
+        <form
+          class="input-group input-group-sm w-auto flex-grow-1 flex-lg-grow-0"
+          id="chat-input-form"
+          autocomplete="off"
+        >
+          <label class="visually-hidden" for="chat-user-input">Type a message to add it to the chat transcript</label>
           <span class="input-group-text bg-body-secondary border-0">
             <i class="fa-regular fa-message"></i>
           </span>
           <input
             class="form-control border-0"
             type="text"
-            placeholder="Live input disabled in this demo"
-            aria-label="Demo input disabled"
-            disabled
+            placeholder="Send a message to the agent"
+            id="chat-user-input"
+            name="message"
+            maxlength="2000"
+            required
+            aria-label="Message to send to the agent"
           />
-          <button class="btn btn-outline-secondary" type="button" disabled>Send</button>
-        </div>
+          <button class="btn btn-primary" type="submit" id="chat-send-button" disabled>
+            Send
+          </button>
+        </form>
       </div>
 
       <p class="text-muted small mb-0" id="chat-helper-text">
