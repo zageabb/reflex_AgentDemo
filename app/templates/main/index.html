@@ -36,74 +36,76 @@
       </div>
     </header>
 
-    <div class="chat-surface d-flex flex-column gap-3">
-      <div
-        class="chat-transcript flex-grow-1 px-4 py-4 border rounded-4 bg-body shadow-sm"
-        id="chat-transcript"
-        aria-live="polite"
-        data-empty="true"
-      >
-        {% set conversation = conversation | default([]) %}
-        {% if conversation %}
-          {% for message in conversation %}
-            {% include "layout/_chat_message.html" %}
-          {% endfor %}
-        {% else %}
-          <div class="text-center text-muted py-5" id="chat-empty-state">
-            <i class="fa-solid fa-robot display-4 mb-3 text-primary"></i>
-            <p class="lead mb-1">Choose a scenario from the left panel to preview the scripted conversation.</p>
-            <p class="small text-secondary mb-0">Messages will appear here as the scenario plays through each step.</p>
-          </div>
-        {% endif %}
-      </div>
-
-      <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
-        <div class="d-flex align-items-center gap-2">
-          <button class="btn btn-outline-secondary btn-sm" type="button" data-action="restart-scenario">
-            <i class="fa-solid fa-power-off me-1"></i>Restart playback
-          </button>
-          <button class="btn btn-outline-primary btn-sm" type="button" data-action="copy-transcript">
-            <i class="fa-regular fa-clipboard me-1"></i>Copy to clipboard
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card shadow-sm" id="chat-input-card">
-      <div class="card-body d-flex flex-column gap-3">
-        <div class="d-flex align-items-center gap-2">
-          <i class="fa-regular fa-keyboard text-primary"></i>
-          <h2 class="h6 mb-0">Compose a message</h2>
-        </div>
-        <form
-          class="input-group input-group-sm w-100"
-          id="chat-input-form"
-          autocomplete="off"
+    <div class="chat-column d-flex flex-column gap-4 align-self-end">
+      <div class="chat-surface d-flex flex-column gap-3">
+        <div
+          class="chat-transcript flex-grow-1 px-4 py-4 border rounded-4 bg-body shadow-sm"
+          id="chat-transcript"
+          aria-live="polite"
+          data-empty="true"
         >
-          <label class="visually-hidden" for="chat-user-input">Type a message to add it to the chat transcript</label>
-          <span class="input-group-text bg-body-secondary border-0">
-            <i class="fa-regular fa-message"></i>
-          </span>
-          <input
-            class="form-control border-0"
-            type="text"
-            placeholder="Send a message to the agent"
-            id="chat-user-input"
-            name="message"
-            maxlength="2000"
-            required
-            aria-label="Message to send to the agent"
-          />
-          <button class="btn btn-primary" type="submit" id="chat-send-button" disabled>
-            Send
-          </button>
-        </form>
-        <p class="text-muted small mb-0" id="chat-helper-text">
-          Conversations are scripted to highlight Reflex capabilities. Use the restart button to replay a scenario or copy the transcript for documentation.
-        </p>
+          {% set conversation = conversation | default([]) %}
+          {% if conversation %}
+            {% for message in conversation %}
+              {% include "layout/_chat_message.html" %}
+            {% endfor %}
+          {% else %}
+            <div class="text-center text-muted py-5" id="chat-empty-state">
+              <i class="fa-solid fa-robot display-4 mb-3 text-primary"></i>
+              <p class="lead mb-1">Choose a scenario from the left panel to preview the scripted conversation.</p>
+              <p class="small text-secondary mb-0">Messages will appear here as the scenario plays through each step.</p>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-outline-secondary btn-sm" type="button" data-action="restart-scenario">
+              <i class="fa-solid fa-power-off me-1"></i>Restart playback
+            </button>
+            <button class="btn btn-outline-primary btn-sm" type="button" data-action="copy-transcript">
+              <i class="fa-regular fa-clipboard me-1"></i>Copy to clipboard
+            </button>
+          </div>
+        </div>
       </div>
+
+      <div class="card shadow-sm" id="chat-input-card">
+        <div class="card-body d-flex flex-column gap-3">
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-regular fa-keyboard text-primary"></i>
+            <h2 class="h6 mb-0">Compose a message</h2>
+          </div>
+          <form
+            class="input-group input-group-sm w-100"
+            id="chat-input-form"
+            autocomplete="off"
+          >
+            <label class="visually-hidden" for="chat-user-input">Type a message to add it to the chat transcript</label>
+            <span class="input-group-text bg-body-secondary border-0">
+              <i class="fa-regular fa-message"></i>
+            </span>
+            <input
+              class="form-control border-0"
+              type="text"
+              placeholder="Send a message to the agent"
+              id="chat-user-input"
+              name="message"
+              maxlength="2000"
+              required
+              aria-label="Message to send to the agent"
+            />
+            <button class="btn btn-primary" type="submit" id="chat-send-button" disabled>
+              Send
+            </button>
+          </form>
+          <p class="text-muted small mb-0" id="chat-helper-text">
+            Conversations are scripted to highlight Reflex capabilities. Use the restart button to replay a scenario or copy the transcript for documentation.
+          </p>
+        </div>
+      </div>
+      <div class="visually-hidden" id="chat-feedback" role="status" aria-live="polite"></div>
     </div>
-    <div class="visually-hidden" id="chat-feedback" role="status" aria-live="polite"></div>
   </section>
 {% endblock %}
 
