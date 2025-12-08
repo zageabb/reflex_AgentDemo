@@ -7,7 +7,7 @@
 {% block content %}
   <section class="cockpit-shell d-flex flex-column gap-4" id="agents-factory" data-accent="indigo">
     <div class="row g-4 align-items-start">
-      <div class="col-12 col-xl-6 d-flex flex-column gap-3">
+      <div class="col-12 col-xl-7 col-xxl-8 d-flex flex-column gap-3">
         <div class="card border-0 shadow-sm cockpit-hero">
           <div class="card-body d-flex flex-wrap align-items-center gap-3 gap-lg-4">
             <div class="d-flex align-items-center gap-3 flex-grow-1">
@@ -111,47 +111,47 @@
                         </div>
                         <span class="badge rounded-pill bg-light text-secondary">{{ items | length }}</span>
                       </div>
-                        <div class="scenario-grid">
-                          {% for scenario in items %}
-                            {% set search_string = (scenario.title ~ ' ' ~ scenario.description ~ ' ' ~ (scenario.tags | join(' '))) | lower %}
-                            <div class="scenario-grid-item">
-                              <a
-                                class="card border-0 shadow-sm scenario-card cockpit-card {% if scenario.id == selected_scenario_id %}active{% endif %}"
-                                href="{{ url_for('main.index', scenario=scenario.id) }}"
-                                data-launch-scenario="true"
-                                data-scenario-card
-                                data-scenario-category="{{ category }}"
-                                data-scenario-description="{{ scenario.description }}"
-                                data-scenario-filename="{{ scenario.filename }}"
-                                data-scenario-id="{{ scenario.id }}"
-                                data-scenario-tags="{{ scenario.tags | join(' ') }}"
-                                data-scenario-title="{{ scenario.title }}"
-                                data-search-text="{{ search_string }}"
-                                aria-current="{{ 'true' if scenario.id == selected_scenario_id else 'false' }}"
-                              >
-                                <div class="card-body d-flex flex-column gap-2">
-                                  <div class="d-flex align-items-start justify-content-between">
-                                    <div class="d-flex align-items-center gap-2">
-                                      <span class="tile-icon"><i class="fa-regular fa-folder"></i></span>
-                                      <h4 class="h6 mb-0">{{ scenario.title }}</h4>
-                                    </div>
-                                    <span class="text-primary-emphasis"><i class="fa-solid fa-circle-chevron-right"></i></span>
+                      <div class="row g-3 scenario-grid">
+                        {% for scenario in items %}
+                          {% set search_string = (scenario.title ~ ' ' ~ scenario.description ~ ' ' ~ (scenario.tags | join(' '))) | lower %}
+                          <div class="col-12 col-md-6 col-xxl-4">
+                            <a
+                              class="card border-0 shadow-sm scenario-card cockpit-card {% if scenario.id == selected_scenario_id %}active{% endif %}"
+                              href="{{ url_for('main.index', scenario=scenario.id) }}"
+                              data-launch-scenario="true"
+                              data-scenario-card
+                              data-scenario-category="{{ category }}"
+                              data-scenario-description="{{ scenario.description }}"
+                              data-scenario-filename="{{ scenario.filename }}"
+                              data-scenario-id="{{ scenario.id }}"
+                              data-scenario-tags="{{ scenario.tags | join(' ') }}"
+                              data-scenario-title="{{ scenario.title }}"
+                              data-search-text="{{ search_string }}"
+                              aria-current="{{ 'true' if scenario.id == selected_scenario_id else 'false' }}"
+                            >
+                              <div class="card-body d-flex flex-column gap-2">
+                                <div class="d-flex align-items-start justify-content-between">
+                                  <div class="d-flex align-items-center gap-2">
+                                    <span class="tile-icon"><i class="fa-regular fa-folder"></i></span>
+                                    <h4 class="h6 mb-0">{{ scenario.title }}</h4>
                                   </div>
-                                  {% if scenario.description %}
-                                    <p class="mb-1 text-muted small">{{ scenario.description }}</p>
-                                  {% endif %}
-                                  {% if scenario.tags %}
-                                    <div class="d-flex flex-wrap gap-1">
-                                      {% for tag in scenario.tags %}
-                                        <span class="badge rounded-pill bg-soft">{{ tag }}</span>
-                                      {% endfor %}
-                                    </div>
-                                  {% endif %}
+                                  <span class="text-primary-emphasis"><i class="fa-solid fa-circle-chevron-right"></i></span>
                                 </div>
-                              </a>
-                            </div>
-                          {% endfor %}
-                        </div>
+                                {% if scenario.description %}
+                                  <p class="mb-1 text-muted small">{{ scenario.description }}</p>
+                                {% endif %}
+                                {% if scenario.tags %}
+                                  <div class="d-flex flex-wrap gap-1">
+                                    {% for tag in scenario.tags %}
+                                      <span class="badge rounded-pill bg-soft">{{ tag }}</span>
+                                    {% endfor %}
+                                  </div>
+                                {% endif %}
+                              </div>
+                            </a>
+                          </div>
+                        {% endfor %}
+                      </div>
                     </section>
                   {% endfor %}
                 </div>
@@ -169,7 +169,7 @@
         </div>
       </div>
 
-      <div class="col-12 col-xl-6">
+      <div class="col-12 col-xl-5 col-xxl-4">
         <div class="card border-0 shadow-sm chat-panel h-100">
           <div class="card-header d-flex align-items-center justify-content-between bg-white">
             <div class="d-flex align-items-center gap-2">

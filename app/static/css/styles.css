@@ -315,13 +315,7 @@ body {
 }
 
 .scenario-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1rem;
-}
-
-.scenario-grid-item {
-  height: 100%;
+  row-gap: 1rem;
 }
 
 .scenario-section + .scenario-section {
