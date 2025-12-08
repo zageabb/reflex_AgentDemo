@@ -1,68 +1,64 @@
-<nav class="navbar navbar-expand-lg navbar-light border-bottom bg-body shadow-sm">
-  <div class="container-xxl">
-    <a class="navbar-brand fw-semibold" href="{{ url_for('main.index') }}">
-      <i class="fa-solid fa-robot me-2 text-primary"></i>Reflex Agents
-    </a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#primary-navbar"
-      aria-controls="primary-navbar"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
+<nav class="navbar navbar-light bg-white shadow-sm border-bottom topbar-modern">
+  <div class="container-xxl d-flex align-items-center gap-3">
+    <button class="btn btn-icon" type="button" aria-label="Open navigation menu">
+      <i class="fa-solid fa-bars"></i>
     </button>
 
-    <div class="collapse navbar-collapse" id="primary-navbar">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-lg-1">
-        <li class="nav-item">
-          <a
-            class="nav-link {% if request.endpoint == 'main.index' and not request.args.get('scenario') %}active{% endif %}"
-            href="{{ url_for('main.index') }}"
-          >
-            Home
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('main.index') ~ '#agents-factory' }}">Agents Factory</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('main.index') ~ '#help-center' }}">Help</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('auth.login') }}">My Account</a>
-        </li>
-        {% if current_user.is_authenticated and current_user.is_admin %}
-          <li class="nav-item">
-            <a
-              class="nav-link {% if request.blueprint == 'admin' %}active{% endif %}"
-              href="{{ url_for('admin.dashboard') }}"
-            >
-              <i class="fa-solid fa-gauge-high me-1"></i>Admin
-            </a>
-          </li>
-        {% endif %}
-      </ul>
-
-      <div class="d-flex align-items-center gap-3">
-        {% if current_user.is_authenticated %}
-          <div class="d-flex align-items-center gap-2 text-muted small">
-            <span class="avatar rounded-circle bg-primary-subtle text-primary-emphasis d-inline-flex align-items-center justify-content-center" style="width: 2rem; height: 2rem;">
-              <i class="fa-solid fa-user-astronaut"></i>
-            </span>
-            <span class="fw-medium">{{ current_user.username or current_user.email }}</span>
-          </div>
-          <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('auth.logout') }}">
-            <i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Sign out
-          </a>
-        {% else %}
-          <a class="btn btn-primary" href="{{ url_for('auth.login') }}">
-            <i class="fa-solid fa-right-to-bracket me-2"></i>Sign in
-          </a>
-        {% endif %}
+    <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" href="{{ url_for('main.index') }}">
+      <span class="brand-glyph d-inline-flex align-items-center justify-content-center">
+        <i class="fa-solid fa-globe"></i>
+      </span>
+      <div class="d-flex flex-column lh-sm">
+        <span class="text-uppercase text-muted small fw-semibold">Agents Factory</span>
+        <span class="fs-5">SCM Cockpit</span>
       </div>
+    </a>
+
+    <div class="d-none d-md-flex align-items-center gap-2">
+      <a class="btn btn-soft" href="{{ url_for('main.index') }}">
+        <i class="fa-solid fa-house me-2"></i>Dashboard
+      </a>
+      <a class="btn btn-soft" href="{{ url_for('main.index') ~ '#agents-factory' }}">
+        <i class="fa-solid fa-robot me-2"></i>Agents Factory
+      </a>
+      <a class="btn btn-soft" href="{{ url_for('main.index') ~ '#help-center' }}">
+        <i class="fa-regular fa-circle-question me-2"></i>Help Center
+      </a>
+      {% if current_user.is_authenticated and current_user.is_admin %}
+        <a class="btn btn-soft" href="{{ url_for('admin.dashboard') }}">
+          <i class="fa-solid fa-gauge-high me-2"></i>Admin
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="ms-auto d-flex align-items-center gap-2">
+      <button class="btn btn-icon" type="button" aria-label="Search">
+        <i class="fa-regular fa-compass"></i>
+      </button>
+      <button class="btn btn-icon" type="button" aria-label="Notifications">
+        <i class="fa-regular fa-bell"></i>
+      </button>
+      <button class="btn btn-icon" type="button" aria-label="Alerts">
+        <i class="fa-regular fa-envelope"></i>
+      </button>
+      {% if current_user.is_authenticated %}
+        <div class="d-flex align-items-center gap-2 ms-2">
+          <span class="avatar rounded-circle bg-primary-subtle text-primary-emphasis d-inline-flex align-items-center justify-content-center">
+            <i class="fa-solid fa-user-astronaut"></i>
+          </span>
+          <div class="d-none d-lg-flex flex-column lh-sm">
+            <span class="small text-muted">Signed in</span>
+            <span class="fw-semibold">{{ current_user.username or current_user.email }}</span>
+          </div>
+        </div>
+        <a class="btn btn-outline-secondary btn-sm ms-1" href="{{ url_for('auth.logout') }}">
+          <i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Sign out
+        </a>
+      {% else %}
+        <a class="btn btn-primary ms-1" href="{{ url_for('auth.login') }}">
+          <i class="fa-solid fa-right-to-bracket me-2"></i>Sign in
+        </a>
+      {% endif %}
     </div>
   </div>
 </nav>
