@@ -82,6 +82,21 @@ body {
   padding-block: 0.5rem 1rem;
 }
 
+.scenario-scroll {
+  max-height: clamp(28rem, 55vh, 46rem);
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.scenario-scroll::-webkit-scrollbar {
+  width: 0.6rem;
+}
+
+.scenario-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--bs-border-color);
+  border-radius: 999px;
+}
+
 .cockpit-hero {
   background: linear-gradient(135deg, #eef2ff, #f8fafc);
   border: 1px solid rgba(148, 163, 184, 0.35);
@@ -288,6 +303,17 @@ body {
 
 .chat-typing-indicator[data-align="start"] {
   justify-content: flex-start;
+}
+
+#chat-user-input.is-scripted {
+  background-color: color-mix(in srgb, var(--scenario-accent) 8%, white);
+  border-color: color-mix(in srgb, var(--scenario-accent) 45%, var(--bs-border-color));
+  box-shadow: 0 0 0 0.15rem color-mix(in srgb, var(--scenario-accent) 18%, transparent);
+  color: var(--bs-body-color);
+}
+
+#chat-user-input.is-scripted:disabled {
+  opacity: 1;
 }
 
 .scenario-card {
