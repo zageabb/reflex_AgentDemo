@@ -1,110 +1,254 @@
 {% extends "base.html" %}
 
-{% block title %}Scenario Library · Reflex Agents Factory{% endblock %}
+{% block title %}SCM Cockpit · Cockpit Intelligence{% endblock %}
 
-{% block sidebar %}
-  {% include "layout/_sidebar.html" %}
-{% endblock %}
+{% block sidebar %}{% endblock %}
 
 {% block content %}
-  <section class="d-flex flex-column gap-4" id="agents-factory" data-accent="indigo">
-    <header class="d-flex flex-wrap justify-content-between align-items-start gap-3">
-      <div>
-        <h1 class="h3 mb-1" id="active-scenario-title">Select a scenario to begin</h1>
-        <div class="d-flex flex-wrap gap-3 align-items-center text-muted small" id="active-scenario-meta">
-          <span class="d-inline-flex align-items-center gap-2" data-role="accent-pill">
-            <i class="fa-solid fa-folder-tree"></i>
-            <span id="active-scenario-category">No category</span>
-          </span>
-          <span class="d-inline-flex align-items-center gap-2" data-role="accent-pill">
-            <i class="fa-solid fa-file-code"></i>
-            <span id="active-scenario-filename">—</span>
-          </span>
-          <span class="d-inline-flex align-items-center gap-2" data-role="accent-pill">
-            <i class="fa-solid fa-tags"></i>
-            <span id="active-scenario-tags">Add tags to improve discovery</span>
-          </span>
-        </div>
-      </div>
-      <div class="d-flex align-items-center gap-2 flex-wrap">
-        <button class="btn btn-outline-secondary btn-sm" type="button" data-action="restart-scenario">
-          <i class="fa-solid fa-arrow-rotate-left me-1"></i>Restart
-        </button>
-        <button class="btn btn-outline-primary btn-sm" type="button" data-action="copy-transcript">
-          <i class="fa-regular fa-copy me-1"></i>Copy transcript
-        </button>
-      </div>
-    </header>
-
-    <div class="chat-column d-flex flex-column gap-4 align-self-end">
-      <div class="chat-surface d-flex flex-column gap-3">
-        <div
-          class="chat-transcript flex-grow-1 px-4 py-4 border rounded-4 bg-body shadow-sm"
-          id="chat-transcript"
-          aria-live="polite"
-          data-empty="true"
-        >
-          {% set conversation = conversation | default([]) %}
-          {% if conversation %}
-            {% for message in conversation %}
-              {% include "layout/_chat_message.html" %}
-            {% endfor %}
-          {% else %}
-            <div class="text-center text-muted py-5" id="chat-empty-state">
-              <i class="fa-solid fa-robot display-4 mb-3 text-primary"></i>
-              <p class="lead mb-1">Choose a scenario from the left panel to preview the scripted conversation.</p>
-              <p class="small text-secondary mb-0">Messages will appear here as the scenario plays through each step.</p>
+  <section class="cockpit-shell d-flex flex-column gap-4" id="agents-factory" data-accent="indigo">
+    <div class="row g-4 align-items-start">
+      <div class="col-12 col-xl-7 col-xxl-8 d-flex flex-column gap-3">
+        <div class="card border-0 shadow-sm cockpit-hero">
+          <div class="card-body d-flex flex-wrap align-items-center gap-3 gap-lg-4">
+            <div class="d-flex align-items-center gap-3 flex-grow-1">
+              <span class="hero-icon d-inline-flex align-items-center justify-content-center">
+                <i class="fa-regular fa-folder-open"></i>
+              </span>
+              <div>
+                <p class="text-uppercase text-muted fw-semibold small mb-1">Cockpit Intelligence</p>
+                <h1 class="h4 mb-1" id="active-scenario-title">Select a scenario to begin</h1>
+                <div class="d-flex flex-wrap gap-2 align-items-center text-muted small" id="active-scenario-meta">
+                  <span class="badge rounded-pill bg-soft">Category: <span id="active-scenario-category">No category</span></span>
+                  <span class="badge rounded-pill bg-soft">File: <span id="active-scenario-filename">—</span></span>
+                  <span class="badge rounded-pill bg-soft">Tags: <span id="active-scenario-tags">Add tags to improve discovery</span></span>
+                </div>
+              </div>
             </div>
-          {% endif %}
+            <div class="d-flex align-items-center gap-2">
+              <button class="btn btn-outline-secondary btn-sm" type="button" data-action="restart-scenario">
+                <i class="fa-solid fa-arrow-rotate-left me-1"></i>Restart
+              </button>
+              <button class="btn btn-primary btn-sm" type="button" data-action="copy-transcript">
+                <i class="fa-regular fa-copy me-1"></i>Copy transcript
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
-          <div class="d-flex align-items-center gap-2">
-            <button class="btn btn-outline-secondary btn-sm" type="button" data-action="restart-scenario">
-              <i class="fa-solid fa-power-off me-1"></i>Restart playback
-            </button>
-            <button class="btn btn-outline-primary btn-sm" type="button" data-action="copy-transcript">
-              <i class="fa-regular fa-clipboard me-1"></i>Copy to clipboard
-            </button>
+        <div class="card border-0 shadow-sm">
+          <div class="card-body d-flex flex-column gap-3">
+            <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2 flex-grow-1">
+                <div class="btn btn-icon btn-icon-lg text-primary" aria-hidden="true">
+                  <i class="fa-solid fa-table-cells-large"></i>
+                </div>
+                <div class="btn btn-icon btn-icon-lg" aria-hidden="true">
+                  <i class="fa-regular fa-folder-open"></i>
+                </div>
+                <div class="btn btn-icon btn-icon-lg" aria-hidden="true">
+                  <i class="fa-regular fa-clock"></i>
+                </div>
+                <div class="btn btn-icon btn-icon-lg" aria-hidden="true">
+                  <i class="fa-regular fa-circle-question"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <label class="visually-hidden" for="scenario-search">Search scenarios</label>
+                  <div class="input-group input-group-sm cockpit-search shadow-sm">
+                    <span class="input-group-text bg-body border-0">
+                      <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input
+                      class="form-control border-0"
+                      id="scenario-search"
+                      name="search"
+                      placeholder="Search by title, description, or tag"
+                      type="search"
+                      value="{{ search_term }}"
+                      autocomplete="off"
+                    />
+                  </div>
+                </div>
+                <div class="btn btn-icon btn-icon-lg" aria-hidden="true">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </div>
+                <div class="btn btn-icon btn-icon-lg" aria-hidden="true">
+                  <i class="fa-solid fa-list-ul"></i>
+                </div>
+                <div class="btn btn-icon btn-icon-lg" aria-hidden="true">
+                  <i class="fa-solid fa-filter"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis">
+                  <i class="fa-solid fa-border-all me-1"></i>{{ scenarios | length }} Scenarios
+                </span>
+                <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis">Cockpit</span>
+              </div>
+              <ul class="nav nav-pills gap-2 small fw-semibold" id="scenario-category-tabs">
+                <li class="nav-item">
+                  <button class="nav-link active" data-category-tab="__all__" type="button">All</button>
+                </li>
+                {% for category, items in scenario_groups.items() %}
+                  <li class="nav-item">
+                    <button class="nav-link" data-category-tab="{{ category }}" type="button">{{ category }}</button>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <div class="scenario-scroll" id="scenario-scroll">
+              {% if scenario_groups %}
+                <div class="d-flex flex-column gap-4" id="scenario-groups">
+                  {% for category, items in scenario_groups.items() %}
+                    <section class="scenario-section" data-category-panel="{{ category }}">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="pill-icon"><i class="fa-solid fa-folder-tree"></i></span>
+                          <h3 class="h6 mb-0 text-muted">{{ category }}</h3>
+                        </div>
+                        <span class="badge rounded-pill bg-light text-secondary">{{ items | length }}</span>
+                      </div>
+                      <div class="row g-3 scenario-grid">
+                        {% for scenario in items %}
+                          {% set search_string = (scenario.title ~ ' ' ~ scenario.description ~ ' ' ~ (scenario.tags | join(' '))) | lower %}
+                          <div class="col-12 col-md-6 col-xxl-4">
+                            <a
+                              class="card border-0 shadow-sm scenario-card cockpit-card {% if scenario.id == selected_scenario_id %}active{% endif %}"
+                              href="{{ url_for('main.index', scenario=scenario.id) }}"
+                              data-launch-scenario="true"
+                              data-scenario-card
+                              data-scenario-category="{{ category }}"
+                              data-scenario-description="{{ scenario.description }}"
+                              data-scenario-filename="{{ scenario.filename }}"
+                              data-scenario-id="{{ scenario.id }}"
+                              data-scenario-tags="{{ scenario.tags | join(' ') }}"
+                              data-scenario-title="{{ scenario.title }}"
+                              data-search-text="{{ search_string }}"
+                              aria-current="{{ 'true' if scenario.id == selected_scenario_id else 'false' }}"
+                            >
+                              <div class="card-body d-flex flex-column gap-2">
+                                <div class="d-flex align-items-start justify-content-between">
+                                  <div class="d-flex align-items-center gap-2">
+                                    <span class="tile-icon"><i class="fa-regular fa-folder"></i></span>
+                                    <h4 class="h6 mb-0">{{ scenario.title }}</h4>
+                                  </div>
+                                  <span class="text-primary-emphasis"><i class="fa-solid fa-circle-chevron-right"></i></span>
+                                </div>
+                                {% if scenario.description %}
+                                  <p class="mb-1 text-muted small">{{ scenario.description }}</p>
+                                {% endif %}
+                                {% if scenario.tags %}
+                                  <div class="d-flex flex-wrap gap-1">
+                                    {% for tag in scenario.tags %}
+                                      <span class="badge rounded-pill bg-soft">{{ tag }}</span>
+                                    {% endfor %}
+                                  </div>
+                                {% endif %}
+                              </div>
+                            </a>
+                          </div>
+                        {% endfor %}
+                      </div>
+                    </section>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="alert alert-info mb-0" id="scenario-empty-state" role="status">
+                  <i class="fa-solid fa-triangle-exclamation me-2"></i>No scenarios have been added yet. Create one from the admin dashboard to get started.
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="alert alert-warning mb-0 d-none" id="scenario-no-results" role="status">
+              <i class="fa-solid fa-triangle-exclamation me-2"></i>No scenarios match your search.
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="card shadow-sm" id="chat-input-card">
-        <div class="card-body d-flex flex-column gap-3">
-          <div class="d-flex align-items-center gap-2">
-            <i class="fa-regular fa-keyboard text-primary"></i>
-            <h2 class="h6 mb-0">Compose a message</h2>
+      <div class="col-12 col-xl-5 col-xxl-4">
+        <div class="card border-0 shadow-sm chat-panel h-100">
+          <div class="card-header d-flex align-items-center justify-content-between bg-white">
+            <div class="d-flex align-items-center gap-2">
+              <span class="window-dots" aria-hidden="true">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-amber"></span>
+                <span class="dot dot-green"></span>
+              </span>
+              <div>
+                <p class="text-uppercase text-muted small mb-0">Chatbot #1</p>
+                <h2 class="h6 mb-0">AI</h2>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <button class="btn btn-outline-secondary btn-sm" type="button" data-action="restart-scenario">
+                <i class="fa-solid fa-power-off me-1"></i>Restart
+              </button>
+              <button class="btn btn-outline-primary btn-sm" type="button" data-action="copy-transcript">
+                <i class="fa-regular fa-clipboard me-1"></i>Copy
+              </button>
+            </div>
           </div>
-          <form
-            class="input-group input-group-sm w-100"
-            id="chat-input-form"
-            autocomplete="off"
-          >
-            <label class="visually-hidden" for="chat-user-input">Type a message to add it to the chat transcript</label>
-            <span class="input-group-text bg-body-secondary border-0">
-              <i class="fa-regular fa-message"></i>
-            </span>
-            <input
-              class="form-control border-0"
-              type="text"
-              placeholder="Send a message to the agent"
-              id="chat-user-input"
-              name="message"
-              maxlength="2000"
-              required
-              aria-label="Message to send to the agent"
-            />
-            <button class="btn btn-primary" type="submit" id="chat-send-button" disabled>
-              Send
-            </button>
-          </form>
-          <p class="text-muted small mb-0" id="chat-helper-text">
-            Conversations are scripted to highlight Reflex capabilities. Use the restart button to replay a scenario or copy the transcript for documentation.
-          </p>
+          <div class="card-body d-flex flex-column gap-3">
+            <div class="chat-surface d-flex flex-column gap-3">
+              <div
+                class="chat-transcript flex-grow-1 px-3 py-3 border rounded-4 bg-body shadow-sm"
+                id="chat-transcript"
+                aria-live="polite"
+                data-empty="true"
+              >
+                {% set conversation = conversation | default([]) %}
+                {% if conversation %}
+                  {% for message in conversation %}
+                    {% include "layout/_chat_message.html" %}
+                  {% endfor %}
+                {% else %}
+                  <div class="text-center text-muted py-5" id="chat-empty-state">
+                    <i class="fa-solid fa-robot display-5 mb-3 text-primary"></i>
+                    <p class="lead mb-1">Choose a scenario to preview the scripted conversation.</p>
+                    <p class="small text-secondary mb-0">Messages will appear here as the scenario plays through each step.</p>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="card shadow-sm" id="chat-input-card">
+              <div class="card-body d-flex flex-column gap-3">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fa-regular fa-keyboard text-primary"></i>
+                  <h3 class="h6 mb-0">Compose a message</h3>
+                </div>
+                <form class="input-group input-group-sm w-100" id="chat-input-form" autocomplete="off">
+                  <label class="visually-hidden" for="chat-user-input">Type a message to add it to the chat transcript</label>
+                  <span class="input-group-text bg-body-secondary border-0">
+                    <i class="fa-regular fa-message"></i>
+                  </span>
+                  <input
+                    class="form-control border-0"
+                    type="text"
+                    placeholder="Send a message to the agent"
+                    id="chat-user-input"
+                    name="message"
+                    maxlength="2000"
+                    required
+                    aria-label="Message to send to the agent"
+                  />
+                  <button class="btn btn-primary" type="submit" id="chat-send-button" disabled>
+                    Send
+                  </button>
+                </form>
+                <p class="text-muted small mb-0" id="chat-helper-text">
+                  Conversations are scripted to highlight Reflex capabilities. Use the restart button to replay a scenario or copy the transcript for documentation.
+                </p>
+              </div>
+            </div>
+            <div class="visually-hidden" id="chat-feedback" role="status" aria-live="polite"></div>
+          </div>
         </div>
       </div>
-      <div class="visually-hidden" id="chat-feedback" role="status" aria-live="polite"></div>
     </div>
   </section>
 {% endblock %}
