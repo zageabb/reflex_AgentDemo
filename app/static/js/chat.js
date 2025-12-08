@@ -101,9 +101,23 @@
     });
   }
 
+  function updateTranscriptScrollState() {
+    if (!chatTranscript) {
+      return;
+    }
+    const { scrollHeight, clientHeight, scrollTop } = chatTranscript;
+    const hasOverflow = scrollHeight - clientHeight > 6;
+    const atTop = scrollTop <= 0;
+    const atBottom = scrollTop + clientHeight >= scrollHeight - 1;
+    chatTranscript.dataset.scrollable = hasOverflow ? "true" : "false";
+    chatTranscript.dataset.scrollTop = atTop ? "start" : "middle";
+    chatTranscript.dataset.scrollEnd = atBottom ? "end" : "middle";
+  }
+
   function scrollTranscript() {
     requestAnimationFrame(() => {
       chatTranscript.scrollTop = chatTranscript.scrollHeight;
+      updateTranscriptScrollState();
     });
   }
 
@@ -114,6 +128,7 @@
       chatTranscript.appendChild(chatEmptyState);
       chatEmptyState.classList.remove("d-none");
     }
+    updateTranscriptScrollState();
   }
 
   function stagePromptValue(value) {
@@ -124,6 +139,7 @@
     chatInput.dataset.scripted = "true";
     chatInput.classList.add("is-scripted");
     chatInput.disabled = true;
+    chatForm?.classList.add("is-scripted");
     if (chatSendButton) {
       chatSendButton.disabled = true;
     }
@@ -137,6 +153,7 @@
     chatInput.disabled = false;
     chatInput.classList.remove("is-scripted");
     chatInput.removeAttribute("data-scripted");
+    chatForm?.classList.remove("is-scripted");
     updatePromptState();
   }
 
@@ -267,23 +284,7 @@
       return;
     }
 
-    const { wrapper, content } = createMessageSkeleton("user", step.speaker || step.actorLabel);
-    chatTranscript.appendChild(wrapper);
-    scrollTranscript();
-
-    if (step.message_html) {
-      content.innerHTML = step.message_html;
-    } else if (fallbackMessage) {
-      await typeText(content, String(fallbackMessage), token);
-      if (token !== playbackToken) {
-        return;
-      }
-    }
-
-    if (!step.message_html && !fallbackMessage) {
-      content.innerHTML = "";
-    }
-
+    await commitScriptedUserMessage(step, token);
     releasePromptValue();
 
     if (typeof step.pause === "number") {
@@ -309,6 +310,28 @@
     content.innerHTML = formatTextContent(text);
     chatTranscript.appendChild(wrapper);
     scrollTranscript();
+  }
+
+  async function commitScriptedUserMessage(step, token) {
+    ensureTranscriptContainer();
+    const stagedMessage = chatInput?.value || step.message || step.text || "";
+    const { wrapper, content } = createMessageSkeleton("user", step.speaker || step.actorLabel);
+    chatTranscript.appendChild(wrapper);
+    scrollTranscript();
+
+    if (step.message_html) {
+      content.innerHTML = step.message_html;
+      return;
+    }
+
+    if (stagedMessage) {
+      await typeText(content, String(stagedMessage), token);
+      if (token !== playbackToken) {
+        return;
+      }
+    } else {
+      content.innerHTML = "";
+    }
   }
 
   async function renderAgent(step, token) {
@@ -686,6 +709,11 @@
     bindCopy();
     bindRestart();
     bindPromptForm();
+
+    if (chatTranscript) {
+      chatTranscript.addEventListener("scroll", updateTranscriptScrollState);
+      updateTranscriptScrollState();
+    }
 
     if (searchInput) {
       searchInput.addEventListener("input", () => applyFilters());
