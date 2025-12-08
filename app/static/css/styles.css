@@ -1,5 +1,5 @@
 :root {
-  --sidebar-width: 30rem;
+  --sidebar-width: 36rem;
   --scenario-accent: var(--bs-primary);
   --scenario-accent-soft: rgba(37, 99, 235, 0.1);
 }
@@ -83,6 +83,12 @@ body {
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
   font-weight: 600;
+}
+
+.chat-surface {
+  max-width: 44rem;
+  margin-left: auto;
+  margin-right: 0;
 }
 
 .chat-transcript {
@@ -255,5 +261,10 @@ body {
 @media (max-width: 991.98px) {
   .chat-transcript {
     max-height: none;
+  }
+
+  .chat-surface {
+    max-width: none;
+    margin-inline: 0;
   }
 }
