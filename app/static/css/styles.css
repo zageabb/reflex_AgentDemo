@@ -85,7 +85,8 @@ body {
   font-weight: 600;
 }
 
-.chat-surface {
+.chat-surface,
+#chat-input-card {
   max-width: 44rem;
   margin-left: auto;
   margin-right: 0;
@@ -263,7 +264,8 @@ body {
     max-height: none;
   }
 
-  .chat-surface {
+  .chat-surface,
+  #chat-input-card {
     max-width: none;
     margin-inline: 0;
   }
