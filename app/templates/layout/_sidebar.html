@@ -50,7 +50,7 @@
                 <h3 class="h6 mb-0 text-muted">{{ category }}</h3>
                 <span class="badge rounded-pill text-bg-light">{{ items | length }}</span>
               </header>
-              <div class="d-grid gap-2">
+              <div class="d-grid gap-2 scenario-grid">
                 {% for scenario in items %}
                   {% set search_string = (scenario.title ~ ' ' ~ scenario.description ~ ' ' ~ (scenario.tags | join(' '))) | lower %}
                   <a
