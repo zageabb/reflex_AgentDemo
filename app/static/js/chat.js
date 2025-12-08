@@ -116,6 +116,30 @@
     }
   }
 
+  function stagePromptValue(value) {
+    if (!chatInput) {
+      return;
+    }
+    chatInput.value = value || "";
+    chatInput.dataset.scripted = "true";
+    chatInput.classList.add("is-scripted");
+    chatInput.disabled = true;
+    if (chatSendButton) {
+      chatSendButton.disabled = true;
+    }
+  }
+
+  function releasePromptValue() {
+    if (!chatInput) {
+      return;
+    }
+    chatInput.value = "";
+    chatInput.disabled = false;
+    chatInput.classList.remove("is-scripted");
+    chatInput.removeAttribute("data-scripted");
+    updatePromptState();
+  }
+
   function ensureTranscriptContainer() {
     if (chatEmptyState && chatEmptyState.parentElement === chatTranscript) {
       chatEmptyState.classList.add("d-none");
@@ -229,37 +253,19 @@
     }
     ensureTranscriptContainer();
 
-    const typingIndicator = createTypingIndicator("user");
-    const typingWrapper = document.createElement("div");
-    typingWrapper.className = "chat-message d-flex gap-3";
-    typingWrapper.dataset.messageRole = "user";
-    const typingIcon = document.createElement("div");
-    typingIcon.className = "flex-shrink-0 chat-icon fs-4";
-    typingIcon.innerHTML = '<i class="fa-solid fa-user"></i>';
-    typingWrapper.appendChild(typingIcon);
-    const typingBubble = document.createElement("div");
-    typingBubble.className = "chat-bubble shadow-sm";
-    typingBubble.appendChild(typingIndicator);
-    typingWrapper.appendChild(typingBubble);
-    const typingSpacer = document.createElement("div");
-    typingSpacer.className = "flex-grow-1";
-    typingWrapper.appendChild(typingSpacer);
-    chatTranscript.appendChild(typingWrapper);
-    scrollTranscript();
-
     const fallbackMessage = step.message || step.text || "";
     const typingDelay =
       typeof step.typingDelay === "number"
         ? step.typingDelay
         : Math.min(1400, Math.max(400, String(fallbackMessage).length * 20));
+
+    stagePromptValue(fallbackMessage);
     await sleep(typingDelay);
 
     if (token !== playbackToken) {
-      typingWrapper.remove();
+      releasePromptValue();
       return;
     }
-
-    typingWrapper.remove();
 
     const { wrapper, content } = createMessageSkeleton("user", step.speaker || step.actorLabel);
     chatTranscript.appendChild(wrapper);
@@ -277,6 +283,8 @@
     if (!step.message_html && !fallbackMessage) {
       content.innerHTML = "";
     }
+
+    releasePromptValue();
 
     if (typeof step.pause === "number") {
       await sleep(Math.max(0, step.pause));
