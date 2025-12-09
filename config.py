@@ -36,7 +36,7 @@ class Config:
     )
     UPLOAD_EXTENSIONS = _parse_extensions(
         os.getenv("UPLOAD_EXTENSIONS"),
-        {".txt", ".md", ".json", ".pdf"},
+        {".txt", ".md", ".json", ".pdf", ".html", ".htm", ".png", ".jpg", ".xlsx", ".docx"},
     )
 
 

@@ -9,13 +9,16 @@ from wtforms.validators import DataRequired, Length, Optional, Regexp
 
 
 class UploadForm(FlaskForm):
-    """Upload form restricted to HTML and text snippets."""
+    """Upload form restricted to approved snippet and asset types."""
 
     file = FileField(
         "Snippet File",
         validators=[
             FileRequired(),
-            FileAllowed({"html", "htm", "txt"}, "Allowed extensions: .html, .htm, .txt"),
+            FileAllowed(
+                {"html", "htm", "txt", "png", "jpg", "xlsx", "docx", "pdf"},
+                "Allowed extensions: .html, .htm, .txt, .png, .jpg, .xlsx, .docx, .pdf",
+            ),
         ],
     )
     submit = SubmitField("Upload File")

@@ -31,7 +31,7 @@ The Reflex Agent Demo is a lightweight Flask application that showcases how scri
 | `ADMIN_USER` / `ADMIN_PASSWORD` | Seeds an admin account on first run. | Only applied if both values exist and the username is new. |
 | `DATABASE_URL` | Override the default SQLite path. | Falls back to `instance/app.db` when unset. |
 | `MAX_CONTENT_LENGTH` | Restricts upload size (bytes). | Defaults to `16 * 1024 * 1024`. |
-| `UPLOAD_EXTENSIONS` | Comma-separated whitelist of upload file extensions. | Default accepts `.txt,.md,.json,.pdf`. |
+| `UPLOAD_EXTENSIONS` | Comma-separated whitelist of upload file extensions. | Default accepts `.txt,.md,.json,.pdf,.html,.htm,.png,.jpg,.xlsx,.docx`. |
 
 Remember to restart the dev server after tweaking `.env` files. Flask caches configuration at startup.
 
