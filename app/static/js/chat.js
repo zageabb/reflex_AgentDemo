@@ -246,13 +246,33 @@
     const url = snippetTemplate.replace("__SNIPPET__", encoded);
     const response = await fetch(url, {
       headers: {
-        Accept: "text/html, text/plain; charset=utf-8",
+        Accept: "text/html, text/plain, image/*; charset=utf-8",
       },
     });
     if (!response.ok) {
       throw new Error(`Unable to fetch snippet: ${response.status}`);
     }
     const contentType = response.headers.get("Content-Type") || "";
+    if (contentType.startsWith("image/")) {
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const label = escapeHTML(cleaned.split("/").pop() || "Snippet image");
+      return {
+        html: `
+          <figure class="snippet-image text-center">
+            <img
+              src="${objectUrl}"
+              alt="${label}"
+              class="img-fluid rounded shadow-sm"
+              loading="lazy"
+              onload="URL.revokeObjectURL('${objectUrl}')"
+            />
+            <figcaption class="text-muted small mt-2">${label}</figcaption>
+          </figure>
+        `,
+        isHtml: true,
+      };
+    }
     const payload = await response.text();
     if (contentType.includes("text/html")) {
       return { html: payload, isHtml: true };

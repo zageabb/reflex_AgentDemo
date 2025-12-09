@@ -1,0 +1,30 @@
+<div class="card shadow-sm mb-3">
+  <div class="card-header bg-dark text-white">Snippet with image support</div>
+  <div class="card-body">
+    <p class="mb-3">
+      Use snippets to pair the narrated steps with visuals. Upload PNG, JPG, SVG, or GIF assets through
+      the admin dashboard and reference them with the <code>/snippet/&lt;path&gt;</code> URL so they render inline.
+    </p>
+    <div class="row g-4 align-items-center">
+      <div class="col-12 col-md-6">
+        <figure class="figure w-100 mb-0">
+          <img
+            src="/snippet/media/snippet-preview.svg"
+            class="figure-img img-fluid rounded shadow-sm"
+            alt="Sample dashboard preview"
+            loading="lazy"
+          />
+          <figcaption class="figure-caption mt-2">Example image served via the snippet endpoint.</figcaption>
+        </figure>
+      </div>
+      <div class="col-12 col-md-6">
+        <ol class="mb-0 small">
+          <li>Upload your image to <code>instance/uploads/</code> or store it under <code>data/snippets/</code>.</li>
+          <li>Reference the file from your scenario step: <code>"snippet": "media/image_gallery.html"</code>.</li>
+          <li>Embed the asset using an absolute snippet path, e.g. <code>/snippet/media/snippet-preview.svg</code>.</li>
+          <li>Add descriptive alt text so presenters know what the audience sees.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
