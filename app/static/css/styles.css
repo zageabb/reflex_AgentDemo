@@ -176,15 +176,20 @@ body {
 
 #chat-column {
   min-height: calc(100vh - 8.5rem);
+  height: calc(100vh - 8.5rem);
+  max-height: calc(100vh - 8.5rem);
 }
 
 .chat-panel {
   min-height: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
 .chat-panel .card-body,
 .chat-panel .chat-surface {
   min-height: 0;
+  flex: 1 1 auto;
 }
 
 .chat-panel .chat-surface,
@@ -196,9 +201,10 @@ body {
 
 .chat-transcript {
   min-height: 18rem;
-  height: 100%;
+  height: auto;
   max-height: none;
   overflow-y: auto;
+  flex: 1 1 auto;
   background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.65), transparent 45%),
     #f8fafc;
   scroll-behavior: smooth;
