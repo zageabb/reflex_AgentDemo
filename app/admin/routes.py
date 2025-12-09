@@ -32,7 +32,16 @@ from .forms import (
 )
 
 
-ALLOWED_UPLOAD_EXTENSIONS = {".html", ".htm", ".txt"}
+ALLOWED_UPLOAD_EXTENSIONS = {
+    ".html",
+    ".htm",
+    ".txt",
+    ".png",
+    ".jpg",
+    ".xlsx",
+    ".docx",
+    ".pdf",
+}
 
 
 def _require_admin() -> None:
@@ -153,7 +162,10 @@ def upload_file():
 
     extension = Path(filename).suffix.lower()
     if extension not in ALLOWED_UPLOAD_EXTENSIONS:
-        flash("Unsupported file type. Upload .html, .htm, or .txt files.", "danger")
+        flash(
+            "Unsupported file type. Upload .html, .htm, .txt, .png, .jpg, .xlsx, .docx, or .pdf files.",
+            "danger",
+        )
         return redirect(url_for("admin.uploads"))
 
     upload_dir = Path(current_app.config["UPLOAD_DIR"])
