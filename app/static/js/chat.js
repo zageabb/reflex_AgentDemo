@@ -131,32 +131,6 @@
     updateTranscriptScrollState();
   }
 
-  function stagePromptValue(value) {
-    if (!chatInput) {
-      return;
-    }
-    chatInput.value = value || "";
-    chatInput.dataset.scripted = "true";
-    chatInput.classList.add("is-scripted");
-    chatInput.disabled = true;
-    chatForm?.classList.add("is-scripted");
-    if (chatSendButton) {
-      chatSendButton.disabled = true;
-    }
-  }
-
-  function releasePromptValue() {
-    if (!chatInput) {
-      return;
-    }
-    chatInput.value = "";
-    chatInput.disabled = false;
-    chatInput.classList.remove("is-scripted");
-    chatInput.removeAttribute("data-scripted");
-    chatForm?.classList.remove("is-scripted");
-    updatePromptState();
-  }
-
   function ensureTranscriptContainer() {
     if (chatEmptyState && chatEmptyState.parentElement === chatTranscript) {
       chatEmptyState.classList.add("d-none");
@@ -296,16 +270,70 @@
         ? step.typingDelay
         : Math.min(1400, Math.max(400, String(fallbackMessage).length * 20));
 
-    stagePromptValue(fallbackMessage);
+    const typingIndicator = createTypingIndicator("user");
+    const typingWrapper = document.createElement("div");
+    typingWrapper.className = "chat-message d-flex gap-3";
+    typingWrapper.dataset.messageRole = "user";
+    const icon = document.createElement("div");
+    icon.className = "flex-shrink-0 chat-icon fs-4";
+    icon.innerHTML = '<i class="fa-solid fa-user"></i>';
+    typingWrapper.appendChild(icon);
+    const bubble = document.createElement("div");
+    bubble.className = "chat-bubble shadow-sm";
+    bubble.appendChild(typingIndicator);
+    typingWrapper.appendChild(bubble);
+    const spacer = document.createElement("div");
+    spacer.className = "flex-grow-1";
+    typingWrapper.appendChild(spacer);
+    chatTranscript.appendChild(typingWrapper);
+    scrollTranscript();
+
     await sleep(typingDelay);
 
+    let snippetHtml = null;
+    if (step.snippet) {
+      try {
+        snippetHtml = await fetchSnippet(step.snippet);
+      } catch (error) {
+        console.error(error);
+        snippetHtml = {
+          html: `<div class="alert alert-warning mb-0">Failed to load snippet: ${escapeHTML(
+            String(step.snippet)
+          )}</div>`,
+          isHtml: true,
+        };
+      }
+    }
+
     if (token !== playbackToken) {
-      releasePromptValue();
+      typingWrapper.remove();
       return;
     }
 
-    await commitScriptedUserMessage(step, token);
-    releasePromptValue();
+    typingWrapper.remove();
+
+    const { wrapper, content } = createMessageSkeleton("user", step.speaker || step.actorLabel);
+    chatTranscript.appendChild(wrapper);
+    scrollTranscript();
+
+    if (step.message_html) {
+      content.innerHTML = step.message_html;
+    } else if (fallbackMessage) {
+      await typeText(content, String(fallbackMessage), token);
+      if (token !== playbackToken) {
+        return;
+      }
+    } else {
+      content.innerHTML = "";
+    }
+
+    if (snippetHtml) {
+      const snippetContainer = document.createElement("div");
+      snippetContainer.innerHTML = snippetHtml.isHtml
+        ? snippetHtml.html
+        : formatTextContent(snippetHtml.html || "");
+      content.appendChild(snippetContainer);
+    }
 
     if (typeof step.pause === "number") {
       await sleep(Math.max(0, step.pause));
@@ -330,28 +358,6 @@
     content.innerHTML = formatTextContent(text);
     chatTranscript.appendChild(wrapper);
     scrollTranscript();
-  }
-
-  async function commitScriptedUserMessage(step, token) {
-    ensureTranscriptContainer();
-    const stagedMessage = chatInput?.value || step.message || step.text || "";
-    const { wrapper, content } = createMessageSkeleton("user", step.speaker || step.actorLabel);
-    chatTranscript.appendChild(wrapper);
-    scrollTranscript();
-
-    if (step.message_html) {
-      content.innerHTML = step.message_html;
-      return;
-    }
-
-    if (stagedMessage) {
-      await typeText(content, String(stagedMessage), token);
-      if (token !== playbackToken) {
-        return;
-      }
-    } else {
-      content.innerHTML = "";
-    }
   }
 
   async function renderAgent(step, token) {
