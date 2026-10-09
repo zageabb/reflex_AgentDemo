@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Type
 
 from dotenv import load_dotenv
 from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
@@ -25,6 +26,8 @@ def create_app(config_name: str | None = None) -> Flask:
     load_dotenv()
 
     app = Flask(__name__, instance_relative_config=True)
+    # Trust one isolated UDA/Caddy proxy hop only.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_prefix=1)
 
     resolved_config = (config_name or os.getenv("FLASK_CONFIG", "development")).lower()
     config_class = CONFIG_MAPPING.get(resolved_config, Config)
